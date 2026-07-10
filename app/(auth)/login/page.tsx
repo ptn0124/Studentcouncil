@@ -10,7 +10,7 @@ export default function LoginPage() {
 
     window.google.accounts.id.initialize({
       client_id:
-        "57121165236-paes4i9jg5gn8b1h8ao97l0l13m2vmqt.apps.googleusercontent.com",
+        "", //이 파트에 SSO Oauith client ID key
 
       callback: async (response) => {
         console.log("Google Login Success");

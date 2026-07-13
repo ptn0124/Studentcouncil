@@ -52,14 +52,14 @@ export default function LoginPage() {
           <div className="header">
             <img className="img" src="/logo.png" alt="logo" />
             <div className="title">학생회 로그인</div>
-            <div
+            <div  onClick={() => window.location.reload()} 
               id="g_id_onload"
               data-auto_prompt="true"
               data-login_uri="http://localhost:3000/api/login"
               //data-callback="handleCredentialResponse"
               data-client_id="57121165236-paes4i9jg5gn8b1h8ao97l0l13m2vmqt.apps.googleusercontent.com" //여기에 Google Oauth client ID 삽입.
             ></div>
-            <div className="g_id_signin"></div>
+            <div className="g_id_signin" hidden></div>
           </div>
         </div>
       </div>

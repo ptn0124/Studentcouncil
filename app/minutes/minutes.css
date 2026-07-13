@@ -34,12 +34,12 @@
 /* ===== base ===== */
 .page {
   min-height: 100vh;
-  background: var(--bg);
+  background: #faf8f5;
   color: var(--ink);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -256,18 +256,19 @@
 .card {
   display: block;
   padding: 14px 16px;
-  background: var(--surface);
+  background: #f3963364;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   text-decoration: none;
   color: var(--ink);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.54);
   transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.15s, border-color 0.15s;
   cursor: pointer;
 }
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.656);
 }
 
 /* 카드 내용 */

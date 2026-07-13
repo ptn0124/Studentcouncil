@@ -1,7 +1,7 @@
 "use client";
 
 import "./minutes.css";
-import "react-calendar/dist/Calendar.css";
+import "react-calendar/dist/Calendar.css"; //캘린더 표시 위해서 라이브러리 사용.
 import { useEffect, useId, useMemo, useState } from "react";
 import Calendar from "react-calendar";
 
@@ -12,7 +12,7 @@ type Minute = {
   meeting_date: string;
   author_id?: string;
   created_at?: string;
-  updated_at?: string;
+  updated_at?: string; //..?
 };
 
 const ymd = (d: Date) =>

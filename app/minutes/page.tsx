@@ -30,6 +30,7 @@ export default function MinutesPage() {
   const [selected, setSelected] = useState<Date | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ title: "", content: "" });
   const uid = useId();
@@ -59,8 +60,51 @@ export default function MinutesPage() {
 
   const startAdd = () => {
     setAdding(true);
+    setEditingId(null);
     setActiveId(null);
     setForm({ title: "", content: "" });
+  };
+
+  const startEdit = (m: Minute) => {
+    setEditingId(m.id);
+    setAdding(false);
+    setForm({ title: m.title, content: m.content });
+  };
+
+  const patch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingId || !form.title.trim() || submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/minutes/${editingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: form.title.trim(),
+          content: form.content,
+        }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const updated: Minute = await res.json();
+      setMinutes((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+      setEditingId(null);
+    } catch (err) {
+      alert("수정 실패: " + (err as Error).message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch(`/api/minutes/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(await res.text());
+      setMinutes((prev) => prev.filter((m) => m.id !== id));
+      if (activeId === id) setActiveId(null);
+    } catch (err) {
+      alert("삭제 실패: " + (err as Error).message);
+    }
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -131,11 +175,13 @@ export default function MinutesPage() {
 
             
 
-            {adding && selected ? (
-              <form className="form-card" onSubmit={submit} noValidate>
+            {(adding && selected) || editingId ? (
+              <form className="form-card" onSubmit={editingId ? patch : submit} noValidate>
                 <div className="form-title">
-                  일정 추가
-                  <span className="badge">{formatKo(ymd(selected))}</span>
+                  {editingId ? "회의록 수정" : "일정 추가"}
+                  {selected && !editingId && (
+                    <span className="badge">{formatKo(ymd(selected))}</span>
+                  )}
                 </div>
 
                 <div className="form">
@@ -177,7 +223,10 @@ export default function MinutesPage() {
                   <button
                     type="button"
                     className="button ghost"
-                    onClick={() => setAdding(false)}
+                    onClick={() => {
+                      setAdding(false);
+                      setEditingId(null);
+                    }}
                   >
                     취소
                   </button>
@@ -217,15 +266,31 @@ export default function MinutesPage() {
               <div className="detail-card">
                 <div className="row between">
                   <h2 className="detail-card-title">{active.title}</h2>
-                  {selected && (
+                  <div className="detail-actions">
                     <button
                       type="button"
                       className="button ghost sm"
-                      onClick={startAdd}
+                      onClick={() => startEdit(active)}
                     >
-                      + 일정 추가 
+                      수정
                     </button>
-                  )}
+                    <button
+                      type="button"
+                      className="button ghost sm"
+                      onClick={() => remove(active.id)}
+                    >
+                      삭제
+                    </button>
+                    {selected && (
+                      <button
+                        type="button"
+                        className="button ghost sm"
+                        onClick={startAdd}
+                      >
+                        + 일정 추가
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="meta">
                   {formatKo(active.meeting_date)}

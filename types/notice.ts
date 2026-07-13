@@ -1,9 +1,10 @@
-// TODO: 공지사항(Notice) 관련 타입 정의
-// 예시:
-// export interface Notice {
-//   id: string;
-//   title: string;
-//   content: string;
-//   createdAt: string;
-//   author: string;
-// }
+export interface Notice {
+  id: number;
+  title: string;
+  content: string;
+  author: string;
+  category: string;
+  isPinned: boolean;
+  views: number;
+  createdAt: string;
+}

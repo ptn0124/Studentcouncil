@@ -1,9 +1,8 @@
 import { Notice, Officer } from "@/types";
 
-
 export let mockNotices: Notice[] = [
   {
-    id: "notice-1",
+    id: 1,
     title: "[공지] 2026학년도 1학기 학생회비 납부 및 사용 내역 안내",
     content: `안녕하세요, 제32대 학생회입니다.
 
@@ -19,14 +18,14 @@ export let mockNotices: Notice[] = [
 자세한 영수증 및 증빙 서류는 학생회실에 비치되어 있으니 언제든 열람하실 수 있습니다. 앞으로도 신뢰할 수 있는 학생회가 되도록 최선을 다하겠습니다.
 
 감사합니다.`,
-    is_pinned: true,
+    isPinned: true,
     views: 342,
-    author_name: "admin_president",
-    created_at: "2026-05-15T09:00:00Z",
-    updated_at: "2026-05-15T09:00:00Z",
+    author: "admin_president",
+    category: "공지사항",
+    createdAt: "2026-05-15T09:00:00Z",
   },
   {
-    id: "notice-2",
+    id: 2,
     title: "[안내] 우산 및 보조배터리 대여 사업 상시 운영 안내",
     content: `안녕하세요, 복지국입니다!
 
@@ -41,14 +40,14 @@ export let mockNotices: Notice[] = [
 ■ 반납 기한: 대여일로부터 3일 이내 (연장 필요 시 학생회실 방문)
 
 ※ 원활한 사업 운영을 위해 반납 기한을 꼭 지켜주시기 바랍니다. 감사합니다!`,
-    is_pinned: false,
+    isPinned: false,
     views: 189,
-    author_name: "welfare_head",
-    created_at: "2026-05-20T10:30:00Z",
-    updated_at: "2026-05-20T10:30:00Z",
+    author: "welfare_head",
+    category: "안내",
+    createdAt: "2026-05-20T10:30:00Z",
   },
   {
-    id: "notice-3",
+    id: 3,
     title: "[공지] 5월 정기 학생총회 개최 공고",
     content: `학생회칙 제15조에 의거하여, 2026학년도 5월 정기 학생총회를 아래와 같이 개최합니다.
 
@@ -65,14 +64,14 @@ export let mockNotices: Notice[] = [
 ■ 참석 대상: 본교 재학생 전원 (의결권은 학생회비 납부자에 한함)
 
 ※ 원활한 의사 정족수 충족을 위해 참석이 어려우신 분들은 사전에 대리인 위임장을 작성하여 제출해 주시기 바랍니다.`,
-    is_pinned: false,
+    isPinned: false,
     views: 120,
-    author_name: "admin_secretary",
-    created_at: "2026-05-22T14:00:00Z",
-    updated_at: "2026-05-22T14:00:00Z",
+    author: "admin_secretary",
+    category: "공지사항",
+    createdAt: "2026-05-22T14:00:00Z",
   },
   {
-    id: "notice-4",
+    id: 4,
     title: "[행사] 기말고사 응원 간식행사 안내 (선착순 200명)",
     content: `기말고사 공부에 지친 학생 여러분을 위해 학생회에서 따뜻한 응원을 담아 간식행사를 준비했습니다!
 
@@ -84,17 +83,18 @@ export let mockNotices: Notice[] = [
 ■ 대상: 재학생 선착순 200명 (학생증 모바일 또는 실물 확인 필수)
 
 열심히 준비한 만큼 많은 관심과 참여 부탁드립니다. 모두 좋은 결과 있으시길 바랍니다!`,
-    is_pinned: false,
+    isPinned: false,
     views: 295,
-    author_name: "event_head",
-    created_at: "2026-06-03T11:15:00Z",
-    updated_at: "2026-06-03T11:15:00Z",
+    author: "event_head",
+    category: "행사",
+    createdAt: "2026-06-03T11:15:00Z",
   }
 ];
 
 // Helper to simulate incrementing views
 export function incrementNoticeViews(id: string) {
-  const notice = mockNotices.find(n => n.id === id);
+  const noticeId = Number(id);
+  const notice = mockNotices.find(n => n.id === noticeId);
   if (notice) {
     notice.views += 1;
     return notice.views;
@@ -140,4 +140,3 @@ export const mockOfficers: Officer[] = [
     created_at: "2026-03-02T09:00:00Z"
   }
 ];
-

@@ -18,7 +18,7 @@ export default function Header() {
     { name: "회의록", href: "/minutes" },
     { name: "건의함", href: "/suggestions" },
     { name: "학사일정", href: "/calendar" },
-    { name: "동아리", href: "/clubs" },
+    { name: "동아리(공사중)", href: "/clubs", isDisabled: true },
   ];
 
   const isActive = (path: string) => {
@@ -40,20 +40,31 @@ export default function Header() {
 
         {/* 데스크톱 네비게이션 */}
         <nav className="hidden md:flex items-center space-x-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-[16px] font-medium transition-colors duration-300 hover:text-[#f39733] relative py-1 ${
-                isActive(item.href) ? "text-[#f39733] font-bold" : "text-[#2c3e50]"
-              }`}
-            >
-              {item.name}
-              {isActive(item.href) && (
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#f39733] rounded-full" />
-              )}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            if (item.isDisabled) {
+              return (
+                <span
+                  key={item.name}
+                  className="text-[16px] font-medium text-[#2c3e50]/40 cursor-not-allowed py-1 select-none"
+                >
+                  {item.name}
+                </span>
+              );
+            }
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-[16px] font-medium transition-colors duration-300 hover:text-[#f39733] relative py-1 ${isActive(item.href) ? "text-[#f39733] font-bold" : "text-[#2c3e50]"
+                  }`}
+              >
+                {item.name}
+                {isActive(item.href) && (
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#f39733] rounded-full" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* 데스크톱 우측 버튼 (로그인/로그아웃 예시) */}
@@ -101,20 +112,31 @@ export default function Header() {
       {/* 모바일 메뉴 모달/드로워 */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-[#2c3e50]/10 bg-[#faf8f5] px-4 py-4 space-y-3 shadow-inner animate-fadeIn">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-all duration-300 ${
-                isActive(item.href)
-                  ? "bg-[#f39733]/10 text-[#f39733] font-bold"
-                  : "text-[#2c3e50] hover:bg-[#2c3e50]/5"
-              }`}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            if (item.isDisabled) {
+              return (
+                <span
+                  key={item.name}
+                  className="block text-[16px] font-medium py-2 px-3 text-[#2c3e50]/40 cursor-not-allowed select-none"
+                >
+                  {item.name}
+                </span>
+              );
+            }
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-all duration-300 ${isActive(item.href)
+                    ? "bg-[#f39733]/10 text-[#f39733] font-bold"
+                    : "text-[#2c3e50] hover:bg-[#2c3e50]/5"
+                  }`}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
           <div className="pt-2 border-t border-[#2c3e50]/10">
             <Link
               href="/login"

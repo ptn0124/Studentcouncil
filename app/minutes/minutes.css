@@ -249,15 +249,7 @@
   margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding-bottom: 10px;
-}
-.day-label {
-  font-size: 12px;
-  color: var(--ink-3);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: 2px;
+  gap: 12px;
 }
 
 /* ===== card ===== */
@@ -274,33 +266,11 @@
   cursor: pointer;
 }
 .card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-1);
-  border-color: var(--border-strong);
-}
-.card.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--focus-ring);
-}
-button.card {
-  text-align: left;
-  width: 75%;
-  font: inherit;
-}
-.detail-card-title {
-  font-weight: 600;
-  font-size: 16px;
-  letter-spacing: -0.005em;
-  background-color: var(--accent);
-  width: 100%;
-  margin: 10px;
-  margin-left: 0;
-  padding-left: 10px;
-  border-radius: 5px;
-  color: #ffffff;
-  font-weight: 500;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
+/* 카드 내용 */
 .title {
   font-weight: 600;
   font-size: 16px;
@@ -318,27 +288,7 @@ button.card {
   line-height: 1.5;
 }
 
-/* ===== detail ===== */
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.split .right .detail-card,
-.split .right .empty.tall {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.detail-card-head {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 28px;
-  box-shadow: var(--shadow-1);
-  padding-bottom: 20px;
-  gap: 10px;
-}
+/* 상세 */
 .detail-card {
   background: var(--surface);
   border: 1px solid var(--border);

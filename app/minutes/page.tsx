@@ -1,94 +1,24 @@
 "use client";
 
 import "./minutes.css";
-import "react-calendar/dist/Calendar.css";
-import { useEffect, useId, useMemo, useState } from "react";
-import Calendar from "react-calendar";
+import Link from "next/link";
 
-type Minute = {
-  id: string;
-  title: string;
-  content: string;
-  meeting_date: string;
-  author_id?: string;
-  created_at?: string;
-  updated_at?: string;
-};
-
-const ymd = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-
-const formatKo = (iso: string) => {
-  const [y, m, d] = iso.split("-");
-  return `${y}년 ${Number(m)}월 ${Number(d)}일`;
-};
+const minutes = [
+  {
+    id: 1,
+    title: "2026년 5월 정기회의",
+    date: "2026-05-20",
+    summary: "예산 집행 및 체육대회 준비 논의",
+  },
+  {
+    id: 2,
+    title: "2026년 5월 임시회의",
+    date: "2026-05-10",
+    summary: "건의함 처리 방식 개선 논의",
+  },
+];
 
 export default function MinutesPage() {
-  const [minutes, setMinutes] = useState<Minute[]>([]);
-  const [selected, setSelected] = useState<Date | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [adding, setAdding] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({ title: "", content: "" });
-  const uid = useId();
-
-  useEffect(() => {
-    fetch("/api/minutes")
-      .then((r) => r.json())
-      .then((d) => setMinutes(d.minutes ?? []))
-      .catch(() => {});
-  }, []);
-
-  const byDate = useMemo(
-    () =>
-      minutes.reduce<Record<string, Minute[]>>((acc, m) => {
-        (acc[m.meeting_date] ??= []).push(m);
-        return acc;
-      }, {}),
-    [minutes]
-  );
-
-  const dayItems = selected
-    ? minutes.filter((m) => m.meeting_date === ymd(selected))
-    : [];
-  const active =
-    minutes.find((m) => m.id === activeId) ??
-    (dayItems.length === 1 ? dayItems[0] : null);
-
-  const startAdd = () => {
-    setAdding(true);
-    setActiveId(null);
-    setForm({ title: "", content: "" });
-  };
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selected || !form.title.trim() || submitting) return;
-    setSubmitting(true);
-    try {
-      const res = await fetch("/api/minutes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: form.title.trim(),
-          content: form.content,
-          meeting_date: ymd(selected),
-        }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const created: Minute = await res.json();
-      setMinutes((prev) => [...prev, created]);
-      setAdding(false);
-      setActiveId(created.id);
-    } catch (err) {
-      alert("저장 실패: " + (err as Error).message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <div className="page">
       <div className="container wide">
@@ -97,170 +27,14 @@ export default function MinutesPage() {
           <p>달력에서 날짜를 선택하면 오른쪽에 상세 내용이 표시됩니다</p>
         </div>
 
-        <div className="split">
-          <div className="left">
-            <div className="calendar-wrap">
-              <Calendar
-                onClickDay={(d) => {
-                  setSelected(d);
-                  setActiveId(null);
-                  setAdding(false);
-                }}
-                value={selected}
-                tileContent={({ date, view }) => {
-                  if (view !== "month") return null;
-                  const items = byDate[ymd(date)];
-                  if (!items) return null;
-                  return (
-                    <div className="tile-events">
-                      {items.map((m) => (
-                        <div key={m.id} className="tile-event" title={m.title}>
-                          {m.title}
-                        </div>
-                      ))}
-                    </div>
-                  );
-                }}
-                calendarType="gregory"
-                locale="ko-KR"
-              />
-            </div>
-          </div>
-
-          <div className="right">
-
-            
-
-            {adding && selected ? (
-              <form className="form-card" onSubmit={submit} noValidate>
-                <div className="form-title">
-                  일정 추가
-                  <span className="badge">{formatKo(ymd(selected))}</span>
-                </div>
-
-                <div className="form">
-                  <div className="field">
-                    <label htmlFor={`${uid}-title`} className="field-label">
-                      제목 <span className="req" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      id={`${uid}-title`}
-                      className="input"
-                      placeholder="예: 2026년 5월 정기회의"
-                      value={form.title}
-                      onChange={(e) =>
-                        setForm({ ...form, title: e.target.value })
-                      }
-                      autoFocus
-                      required
-                      aria-required="true"
-                      maxLength={80}
-                    />
-                  </div>
-                  <div className="field">
-                    <label htmlFor={`${uid}-content`} className="field-label">
-                      내용
-                    </label>
-                    <textarea
-                      id={`${uid}-content`}
-                      className="input textarea"
-                      value={form.content}
-                      onChange={(e) =>
-                        setForm({ ...form, content: e.target.value })
-                      }
-                      rows={8}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="button ghost"
-                    onClick={() => setAdding(false)}
-                  >
-                    취소
-                  </button>
-                  <button
-                    type="submit"
-                    className="button primary"
-                    disabled={!form.title.trim() || submitting}
-                  >
-                    {submitting ? "저장 중..." : "저장"}
-                  </button>
-                </div>
-              </form>
-            ) : active ? (
-              <div className="right-panel">
-              <div className="detail-card-head">
-                {selected && dayItems.length > 1 && !adding && (
-                  <div className="day-list">
-                    <div className="day-label">{formatKo(ymd(selected))} 회의록</div>
-                    {dayItems.map((m) => (
-                      <div className="right-head-button">
-                        <button
-                          key={m.id}
-                          type="button"
-                          className={`card ${active?.id === m.id ? "active" : ""}`}
-                          onClick={() => setActiveId(m.id)}
-                        >
-                          <div className="title">{m.title}</div>
-                        </button>
-                        <button>
-                          
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                 )}
-              </div>
-              <div className="detail-card">
-                <div className="row between">
-                  <h2 className="detail-card-title">{active.title}</h2>
-                  {selected && (
-                    <button
-                      type="button"
-                      className="button ghost sm"
-                      onClick={startAdd}
-                    >
-                      + 일정 추가 
-                    </button>
-                  )}
-                </div>
-                <div className="meta">
-                  {formatKo(active.meeting_date)}
-                </div>
-                <div className="content">
-                  {active.content.split("\n").map((line, i) => (
-                    <p key={i}>{line}</p>
-                  ))}
-                </div>
-              </div>
-            </div>
-            ) : (
-              <div className="empty tall">
-                {selected ? (
-                  <>
-                    <div className="icon" aria-hidden="true">
-                      +
-                    </div>
-                    <div>
-                      {formatKo(ymd(selected))}에 등록된 회의록이 없습니다.
-                    </div>
-                    <button
-                      type="button"
-                      className="button primary"
-                      onClick={startAdd}
-                    >
-                      일정 추가
-                    </button>
-                  </>
-                ) : (
-                  "달력에서 날짜를 선택해 주세요."
-                )}
-              </div>
-            )}
-          </div>
+        <div className="list">
+          {minutes.map((m) => (
+            <Link key={m.id} href={`/minutes/${m.id}`} className="card">
+              <div className="title">{m.title}</div>
+              <div className="date">{m.date}</div>
+              <div className="summary">{m.summary}</div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

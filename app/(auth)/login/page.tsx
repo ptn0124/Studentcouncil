@@ -6,13 +6,14 @@ import "./login.css";
 
 export default function LoginPage() {
   useEffect(() => {
-    if (!window.google) return;
+    const google = (window as any).google;
+    if (!google) return;
 
-    window.google.accounts.id.initialize({
+    google.accounts.id.initialize({
       client_id:
         "", //이 파트에 SSO Oauith client ID key
 
-      callback: async (response) => {
+      callback: async (response: any) => {
         console.log("Google Login Success");
 
         try {
@@ -36,7 +37,7 @@ export default function LoginPage() {
   }, []);
 
   const handleGoogleLogin = () => {
-    window.google?.accounts.id.prompt();
+    (window as any).google?.accounts.id.prompt();
   };
 
   return (

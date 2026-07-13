@@ -108,13 +108,13 @@ export default function MinutesPage() {
           <div className="left">
             <div className="calendar-wrap">
               <Calendar
-                onClickDay={(d) => {
+                onClickDay={(d: Date) => {
                   setSelected(d);
                   setActiveId(null);
                   setAdding(false);
                 }}
                 value={selected}
-                tileContent={({ date, view }) => {
+                tileContent={({ date, view }: { date: Date; view: string }) => {
                   if (view !== "month") return null;
                   const items = byDate[ymd(date)];
                   if (!items) return null;

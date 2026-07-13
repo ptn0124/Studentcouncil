@@ -1,7 +1,7 @@
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-export async function Get() {
+export async function GET() {
     const supabase = await createClient()
     const { data, error } = await supabase.from('notices')
         .select('*')
@@ -14,10 +14,10 @@ export async function Get() {
 
 }
 
-export async function Post(req: Request) {
+export async function POST(req: Request) {
     const supabase = await createClient()
     const { data: { session }} = await supabase.auth.getSession()
-    if (!session) return NextResponse.json({ error: 'Unauthorized'}), {status: 401}
+    if (!session) return NextResponse.json({ error: 'Unauthorized'}, {status: 401})
 
     const { data: profile} = await supabase.from('profiles')
         .select('role')
@@ -29,7 +29,7 @@ export async function Post(req: Request) {
 
     const { title, content, is_pinned } = await req.json()
     if (!title || !content) {
-        return NextResponse.json({ error: '제목과 내용을 입력해주세요.' }), { status: 400 }
+        return NextResponse.json({ error: '제목과 내용을 입력해주세요.' }, { status: 400 })
     }
 
     const { data, error } = await supabase.from('notices')
@@ -42,6 +42,6 @@ export async function Post(req: Request) {
         .select()
         .single()
 
-    if (error) return NextResponse.json({ error: error.message }), { status: 500 }
-    return NextResponse.json({ notice: data }), { status: 201 }
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ notice: data }, { status: 201 })
 }

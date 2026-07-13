@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+//import { useEffect } from "react";
 import Script from "next/script";
 import "./login.css";
 

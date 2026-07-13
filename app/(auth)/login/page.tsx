@@ -58,7 +58,7 @@ export default function LoginPage() {
               data-auto_prompt="true"
               data-login_uri="http://localhost:3000/api/login"
               data-callback="handleCredentialResponse"
-              data-client_id="57121165236-paes4i9jg5gn8b1h8ao97l0l13m2vmqt.apps.googleusercontent.com" //여기에 Google Oauth client ID 삽입.
+              data-client_id="970543082215-2gufle8v8uri3ch84u7m3l1bbmmut7qr.apps.googleusercontent.com" //여기에 Google Oauth client ID 삽입.
             ></div>
             <div className="g_id_signin"></div>
           </div>

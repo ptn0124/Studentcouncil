@@ -1,24 +1,19 @@
 import "../minutes.css";
 
-export default function MinutesDetailPage({
+export default async function MinutesDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   return (
     <div className="page">
-
       <div className="container">
-
         <div className="detail-card">
+          <h1 className="title">2026년 {id}번 회의록</h1>
 
-          <h1 className="title">
-            2026년 {params.id}번 회의록
-          </h1>
-
-          <div className="meta">
-            2026-05-20 · 학생회 회의
-          </div>
+          <div className="meta">2026-05-20 · 학생회 회의</div>
 
           <div className="content">
             <p>1. 예산 집행 현황 보고</p>
@@ -26,14 +21,9 @@ export default function MinutesDetailPage({
             <p>3. 건의함 처리 개선안 논의</p>
           </div>
 
-          <button className="button">
-            PDF 다운로드
-          </button>
-
+          <button className="button">PDF 다운로드</button>
         </div>
-
       </div>
-
     </div>
   );
 }

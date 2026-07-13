@@ -1,10 +1,10 @@
 export interface Suggestion {
-  id: string;
+  id: number;
   content: string;
-  is_anonymous: boolean;
-  status: "pending" | "in_progress" | "resolved" | "rejected";
-  reply: string | null;
-  created_at: string;
-  updated_at: string;
+  category: string;
+  status: string;
+  isAnonymous: boolean;
+  reply: string;
+  repliedAt: string;
+  createdAt: string;
 }
-

@@ -1,9 +1,10 @@
 "use client";
-import { useEffect } from "react";
+//import { useEffect } from "react";
 import Script from "next/script";
 import "./login.css";
 
 export default function LoginPage() {
+  /*
   function decodeJWT(token: string) {
     let base64Url = token.split(".")[1];
     let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -19,53 +20,49 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    if (!window.google) return;
-
-    window.google.accounts.id.initialize({
-      client_id:
-        "970543082215-2gufle8v8uri3ch84u7m3l1bbmmut7qr.apps.googleusercontent.com", //이 파트에 SSO Oauith client ID key
-
-      callback: async (response) => {
-        console.log("Google Login Success");
-
-        try {
-          const res = await fetch("/api/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              credential: response.credential,
-            }),
-          });
-
-          const data = await res.json();
-          console.log(data);
-        } catch (err) {
-          console.error(err);
-        }
-      },
-    });
+    (window as any).handleCredentialResponse = handleCredentialResponse;
   }, []);
 
-  const handleGoogleLogin = () => {
-    window.google?.accounts.id.prompt();
-  };
-
+  function handleCredentialResponse(response: { credential: string }) {
+    const responsePayload = decodeJWT(response.credential);
+    console.log("  Full Name: " + responsePayload.name);
+    // console.log("  Given Name: " + responsePayload.given_name);
+    // console.log("  Family Name: " + responsePayload.family_name);
+    // console.log("  Unique ID: " + responsePayload.sub);
+    // console.log("  Profile image URL: " + responsePayload.picture);
+    // console.log("  Email: " + responsePayload.email);
+    fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // 여기에 responsePayload 정보 들어가면 됨.
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data)); // 이 파트도 로그인 쪽 redirect 등등으로 변화 예정.
+  }
+*/
   return (
-  <>
-    <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
-    <div className="page">
-      <div className="card">
-        <div className="header">
-          <img className="img" src="/logo.png" alt="logo" />
-          <div className="title">학생회 로그인</div>
+    <>
+      <Script src="https://accounts.google.com/gsi/client" />
+      <div className="page">
+        <div className="card">
+          <div className="header">
+            <img className="img" src="/logo.png" alt="logo" />
+            <div className="title">학생회 로그인</div>
+            <div  onClick={() => window.location.reload()} 
+              id="g_id_onload"
+              data-auto_prompt="true"
+              data-login_uri="http://localhost:3000/api/login"
+              //data-callback="handleCredentialResponse"
+              data-client_id="57121165236-paes4i9jg5gn8b1h8ao97l0l13m2vmqt.apps.googleusercontent.com" //여기에 Google Oauth client ID 삽입.
+            ></div>
+            <div className="g_id_signin" hidden></div>
+          </div>
         </div>
-        <button className="google-btn" onClick={handleGoogleLogin}>
-          Google로 로그인
-        </button>
       </div>
-    </div>
-  </>
-)
+    </>
+  );
 }

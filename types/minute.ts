@@ -1,10 +1,9 @@
 export interface Minute {
-  id: string;
+  id: number;
   title: string;
+  date: string;
+  agenda: string[];
   content: string;
-  meeting_date: string;
-  author_id?: string;
-  created_at: string;
-  updated_at: string;
+  fileUrl: string;
+  createdAt: string;
 }
-

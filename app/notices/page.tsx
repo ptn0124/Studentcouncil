@@ -134,14 +134,13 @@ export default function NoticesPage() {
               <Link
                 key={notice.id}
                 href={`/notices/${notice.id}`}
-                className={`block group relative rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 overflow-hidden ${
-                  notice.is_pinned
+                className={`block group relative rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 overflow-hidden ${notice.isPinned
                     ? "bg-[#f39733]/5 hover:bg-[#f39733]/10 border-[#f39733]/30"
                     : "bg-white/70 backdrop-blur-sm hover:bg-white border-[#2c3e50]/10"
-                }`}
+                  }`}
               >
                 {/* 중요 핀 표식 */}
-                {notice.is_pinned && (
+                {notice.isPinned && (
                   <div className="absolute right-0 top-0 bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-3.5 py-1.5 rounded-bl-xl flex items-center gap-1 shadow-sm">
                     📌 <span>중요</span>
                   </div>
@@ -161,10 +160,10 @@ export default function NoticesPage() {
                   {/* 메타정보 (캡션) caption: 14px */}
                   <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50 pt-2">
                     <span className="flex items-center gap-1 font-medium text-[#2c3e50]/60">
-                      👤 {notice.author_name || "작성자 없음"}
+                      👤 {notice.author || "작성자 없음"}
                     </span>
                     <span>•</span>
-                    <span>📅 {formatDate(notice.created_at)}</span>
+                    <span>📅 {formatDate(notice.createdAt)}</span>
                     <span>•</span>
                     <span>👀 조회수 {notice.views}</span>
                   </div>

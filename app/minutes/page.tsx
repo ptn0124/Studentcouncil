@@ -40,7 +40,7 @@ const initial: Minute[] = [
 
 const ymd = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
+    d.getDate(),
   ).padStart(2, "0")}`;
 
 const formatKo = (iso: string) => {
@@ -62,7 +62,7 @@ export default function MinutesPage() {
         (acc[m.date] ??= []).push(m);
         return acc;
       }, {}),
-    [minutes]
+    [minutes],
   );
 
   const dayItems = selected
@@ -135,7 +135,9 @@ export default function MinutesPage() {
 
             {selected && dayItems.length > 1 && !adding && (
               <div className="day-list">
-                <div className="day-label">{formatKo(ymd(selected))} 회의록</div>
+                <div className="day-label">
+                  {formatKo(ymd(selected))} 회의록
+                </div>
                 {dayItems.map((m) => (
                   <button
                     key={m.id}
@@ -162,7 +164,10 @@ export default function MinutesPage() {
                 <div className="form">
                   <div className="field">
                     <label htmlFor={`${uid}-title`} className="field-label">
-                      제목 <span className="req" aria-hidden="true">*</span>
+                      제목{" "}
+                      <span className="req" aria-hidden="true">
+                        *
+                      </span>
                       <span className="field-hint">필수</span>
                     </label>
                     <input

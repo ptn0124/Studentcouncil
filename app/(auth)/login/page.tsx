@@ -42,7 +42,8 @@ export default function LoginPage() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data)); // supabase code 검토 이후 필요 없다 판단하여 남겨둠
+      .then((data) => console.log(data))
+      .then(() => {window.location.href = '/'}); // supabase code 검토 이후 필요 없다 판단하여 남겨둠
   }
 /* 
   function dataRecv(data: any) {
@@ -61,6 +62,7 @@ export default function LoginPage() {
           <div className="header">
             <img className="img" src="/logo.png" alt="logo" />
             <div className="title">학생회 로그인</div>
+            <br></br>
             <div  onClick={() => window.location.reload()} 
               id="g_id_onload"
               data-auto_prompt="true"

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import { createClient } from "@/lib/supabase/client";
 export interface HeaderProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
 }
@@ -26,6 +26,30 @@ export default function Header() {
       return pathname === "/";
     }
     return pathname.startsWith(path);
+  };
+
+  const supabase = createClient();
+  const [session, setSession] = useState<any>(null);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+    window.location.replace('/login'); // 로그아웃 후 페이지 새로고침
   };
 
   return (
@@ -69,12 +93,23 @@ export default function Header() {
 
         {/* 데스크톱 우측 버튼 (로그인/로그아웃 예시) */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link
-            href="/login"
-            className="text-[14px] font-semibold px-4 py-2 text-[#2c3e50] border border-[#2c3e50]/20 rounded-full hover:bg-[#2c3e50] hover:text-[#faf8f5] transition-all duration-300"
-          >
-            로그인
-          </Link>
+
+          {session ? (
+            <button
+              onClick={handleLogout}
+              className="text-[14px] font-semibold px-4 py-2 text-[#ff3e38] bg-[#faf8f5] border border-[#2c3e50]/20 rounded-full hover:bg-[#ff3e38] hover:text-[#faf8f5] transition-all duration-300"
+            >
+              로그아웃
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="text-[14px] font-semibold px-4 py-2 text-[#2c3e50] border border-[#2c3e50]/20 rounded-full hover:bg-[#2c3e50] hover:text-[#faf8f5] transition-all duration-300"
+            >
+              로그인
+            </Link>
+          )}
+
         </div>
 
         {/* 모바일 햄버거 메뉴 버튼 */}

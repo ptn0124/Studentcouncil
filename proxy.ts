@@ -51,7 +51,6 @@ export async function proxy(req: NextRequest) {
       );
     }
   }
-
   return res;
 }
 

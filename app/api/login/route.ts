@@ -37,24 +37,29 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
+
+    
     const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user?.id)
         .single()
-
+    
+        //migrated to supabase auth
+    
+        /*
     const payload = {
         role: profile?.role ?? 'user'
     }
     
     const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h'});
-
+    */
 
     return NextResponse.json({
         
         user: data.user,
         role: profile?.role ?? 'user',
-        verification: token
+        //verification: token
 
     })
 }

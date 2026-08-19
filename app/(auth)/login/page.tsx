@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import Script from "next/script";
 import "./login.css";
-import { handleBuildComplete } from "next/dist/build/adapter/build-complete";
 
 export default function LoginPage() {
   
@@ -19,28 +18,6 @@ export default function LoginPage() {
     );
     return JSON.parse(jsonPayload);
   }
-  
-  function appendToCookie(cookieName: any, newValue: any, expiryDays = 7) {
-    // 1. Find and extract the existing cookie value
-    let existingValue = "";
-    const cookies = document.cookie.split('; ');
-    const cookiePair = cookies.find(row => row.startsWith(cookieName + '='));
-    
-    if (cookiePair) {
-        existingValue = decodeURIComponent(cookiePair.split('=')[1]);
-    }
-
-    // 2. Append the new value (using a comma separator if data already exists)
-    let updatedValue = existingValue ? existingValue + ',' + newValue : newValue;
-
-    // 3. Set the expiration date
-    const date = new Date();
-    date.setTime(date.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
-    const expires = "; expires=" + date.toUTCString();
-
-    // 4. Save back to the browser
-    document.cookie = cookieName + "=" + encodeURIComponent(updatedValue) + expires + "; path=/; SameSite=Lax";
-}
 
 
   useEffect(() => {
@@ -65,9 +42,9 @@ export default function LoginPage() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => dataRecv(data)); // 이 파트도 로그인 쪽 redirect 등등으로 변화 예정.
+      .then((data) => console.log(data)); // supabase code 검토 이후 필요 없다 판단하여 남겨둠
   }
-
+/* 
   function dataRecv(data: any) {
     //console.log(data.role);
     if(data.verification == 'user' || 'admin') {
@@ -75,7 +52,7 @@ export default function LoginPage() {
       window.location.replace('/');
     }
   }
-
+*/
   return (
     <>
       <Script src="https://accounts.google.com/gsi/client" />

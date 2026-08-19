@@ -56,16 +56,8 @@ export default function Footer() {
         {/* 하단 구분선 & 저작권 */}
         <div className="mt-12 pt-8 border-t border-[#faf8f5]/10 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-[14px] text-[#faf8f5]/50">
-            © {new Date().getFullYear()} Student Council. All Rights Reserved.
+            © {new Date().getFullYear()} BADA. All Rights Reserved.
           </p>
-          <div className="flex space-x-6 text-[14px] text-[#faf8f5]/50">
-            <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
-              개인정보처리방침
-            </a>
-            <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
-              이용약관
-            </a>
-          </div>
         </div>
       </div>
     </footer>

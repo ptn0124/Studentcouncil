@@ -19,6 +19,29 @@ export default function LoginPage() {
     );
     return JSON.parse(jsonPayload);
   }
+  
+  function appendToCookie(cookieName: any, newValue: any, expiryDays = 7) {
+    // 1. Find and extract the existing cookie value
+    let existingValue = "";
+    const cookies = document.cookie.split('; ');
+    const cookiePair = cookies.find(row => row.startsWith(cookieName + '='));
+    
+    if (cookiePair) {
+        existingValue = decodeURIComponent(cookiePair.split('=')[1]);
+    }
+
+    // 2. Append the new value (using a comma separator if data already exists)
+    let updatedValue = existingValue ? existingValue + ',' + newValue : newValue;
+
+    // 3. Set the expiration date
+    const date = new Date();
+    date.setTime(date.getTime() + (expiryDays * 24 * 60 * 60 * 1000));
+    const expires = "; expires=" + date.toUTCString();
+
+    // 4. Save back to the browser
+    document.cookie = cookieName + "=" + encodeURIComponent(updatedValue) + expires + "; path=/; SameSite=Lax";
+}
+
 
   useEffect(() => {
     (window as any).handleCredentialResponse = handleCredentialResponse;
@@ -42,7 +65,15 @@ export default function LoginPage() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data)); // 이 파트도 로그인 쪽 redirect 등등으로 변화 예정.
+      .then((data) => dataRecv(data)); // 이 파트도 로그인 쪽 redirect 등등으로 변화 예정.
+  }
+
+  function dataRecv(data: any) {
+    //console.log(data.role);
+    if(data.verification == 'user' || 'admin') {
+      appendToCookie('token', data.verification);
+      window.location.replace('/');
+    }
   }
 
   return (
@@ -59,6 +90,7 @@ export default function LoginPage() {
               data-login_uri="http://localhost:3000/api/login"
               data-callback="handleCredentialResponse"
               data-client_id="977754668487-fne0kbulc5it3rkqkgc4v2l3oe851e9l.apps.googleusercontent.com" //여기에 Google Oauth client ID 삽입.
+              //data-client_id="57121165236-paes4i9jg5gn8b1h8ao97l0l13m2vmqt.apps.googleusercontent.com"
             ></div>
             <div className="g_id_signin"></div>
           </div>

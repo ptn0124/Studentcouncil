@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+const jwt = require('jsonwebtoken');
+const jwtSecret = process.env.JWTSECRET || "jwtrandomHexes1235"
 
 export async function POST(req: Request) {
     const { credential } = await req.json()
@@ -41,9 +43,19 @@ export async function POST(req: Request) {
         .eq('id', data.user?.id)
         .single()
 
-    return NextResponse.json({
-        user: data.user,
+    const payload = {
         role: profile?.role ?? 'user'
+    }
+    
+    const token = jwt.sign(payload, jwtSecret, { expiresIn: '1h'});
+
+
+    return NextResponse.json({
+        
+        user: data.user,
+        role: profile?.role ?? 'user',
+        verification: token
+
     })
 }
 

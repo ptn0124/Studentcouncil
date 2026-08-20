@@ -1,7 +1,6 @@
 "use client";
 
 import { mockOfficers } from "@/lib/mockData";
-
 export interface MainPageProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
 }

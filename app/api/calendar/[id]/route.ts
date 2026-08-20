@@ -29,7 +29,7 @@ export async function PATCH(req: Request, context: Params) {
     const { title, start_date, end_date, description } = await req.json()
 
     const { data, error } = await supabase
-        .from('calendar')
+        .from('calendar_events')
         .update({
             ...(title && { title }),
             ...(start_date && { start_date }),
@@ -67,7 +67,7 @@ export async function DELETE(req: Request, context: Params) {
     }
 
     const { error } = await supabase
-        .from('calendar')
+        .from('calendar_events  ')
         .delete()
         .eq('id', id)
 

@@ -58,7 +58,7 @@ export async function GET() {
 
     const [customResult, neisEvents] = await Promise.all([
         supabase
-            .from('calendar')
+            .from('calendar_events')
             .select('id, title, start_date, end_date, description')
             .order('start_date', { ascending: true }),
         fetchNeisEvents().catch((err) => {
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
     }
 
     const { data, error } = await supabase
-        .from('calendar')
+        .from('calendar_events')
         .insert([{
             title,
             start_date,

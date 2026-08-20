@@ -44,8 +44,6 @@ export async function POST(req: Request) {
             content,
             is_anonymous: is_anonymous ?? true
         })
-        .select()
-        .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 

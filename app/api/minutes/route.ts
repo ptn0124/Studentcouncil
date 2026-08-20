@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server'
 export async function GET() {
     const supabase = await createClient()
     const { data, error } = await supabase
-        .from('minutes')
-        .select('id, title, content, created_at')
+        .from('meeting_minutes')
+        .select('id, title, content, meeting_date, author_id, created_at')
         .order('created_at', { ascending: false })
     
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     }
 
     const { data, error } = await supabase
-        .from('minutes')
+        .from('meeting_minutes')
         .insert([{ 
             title, 
             content, 

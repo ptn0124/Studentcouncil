@@ -85,7 +85,7 @@ export default function MinutesPage() {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const updated: Minute = await res.json();
+      const { minute: updated }: { minute: Minute } = await res.json();
       setMinutes((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
       setEditingId(null);
     } catch (err) {
@@ -122,7 +122,7 @@ export default function MinutesPage() {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const created: Minute = await res.json();
+      const { minute: created }: { minute: Minute } = await res.json();
       setMinutes((prev) => [...prev, created]);
       setAdding(false);
       setActiveId(created.id);

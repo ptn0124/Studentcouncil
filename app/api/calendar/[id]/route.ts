@@ -67,7 +67,7 @@ export async function DELETE(req: Request, context: Params) {
     }
 
     const { error } = await supabase
-        .from('calendar_events  ')
+        .from('calendar_events')
         .delete()
         .eq('id', id)
 

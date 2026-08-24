@@ -46,9 +46,8 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-[16px] font-semibold text-[#f39733]">연락처</h3>
             <ul className="space-y-2 text-[14px] text-[#faf8f5]/70">
-              <li>📍 위치: 학생회관 2층 201호</li>
-              <li>✉️ 이메일: support@studentcouncil.org</li>
-              <li>⏰ 운영: 평일 09:00 - 18:00</li>
+              <li>✉️ Email: [EMAIL_ADDRESS]</li>
+              <li>📞 Phone: [PHONE_NUMBER]</li>
             </ul>
           </div>
         </div>
@@ -59,12 +58,12 @@ export default function Footer() {
             © {new Date().getFullYear()} Student Council. All Rights Reserved.
           </p>
           <div className="flex space-x-6 text-[14px] text-[#faf8f5]/50">
-            <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
+            {/* <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
               개인정보처리방침
             </a>
             <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
               이용약관
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

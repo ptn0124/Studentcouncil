@@ -9,7 +9,7 @@ export async function GET(req: Request, context: Params) {
     const { id } = await context.params
     const supabase = await createClient()
 
-    await supabase.rpc('increment_notice_view_count', { notice_id: id })
+    await supabase.rpc('increment_view_count', { notice_id: id })
 
     const { data, error } = await supabase
         .from('notices')

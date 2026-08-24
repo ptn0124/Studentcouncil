@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { getCouncilTerm } from "@/lib/config";
 
 export interface FooterProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
 }
 
-export default function Footer() {
+export default async function Footer() {
+  const councilTerm = await getCouncilTerm();
   return (
     <footer className="w-full bg-[#2c3e50] text-[#faf8f5] py-12 border-t border-[#2c3e50]/20 mt-auto">
       <div className="max-w-[1280px] mx-auto px-4 md:px-8">
@@ -12,7 +14,7 @@ export default function Footer() {
           {/* 학생회 정보 */}
           <div className="space-y-4">
             <span className="text-[20px] font-bold tracking-tight">
-              🏫 제32대 학생회
+              🏫 제{councilTerm}대 학생회
             </span>
             <p className="text-[14px] text-[#faf8f5]/70 leading-relaxed">
               학생 여러분의 목소리에 항상 귀 기울이며, <br />

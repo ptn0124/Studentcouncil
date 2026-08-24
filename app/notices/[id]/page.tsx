@@ -90,7 +90,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
       {/* 헤더 영역 */}
       <div className="space-y-4 pb-6 border-b border-[#2c3e50]/10">
         <div className="flex items-center gap-2">
-          {notice.isPinned && (
+          {notice.is_pinned && (
             <span className="bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-2.5 py-1 rounded-md shadow-sm">
               📌 중요 공지
             </span>
@@ -104,11 +104,11 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
 
         {/* 메타정보 (캡션) caption: 14px */}
         <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50">
-          <span className="font-medium text-[#2c3e50]/70">👤 작성자: {notice.author || "작성자 없음"}</span>
+          <span className="font-medium text-[#2c3e50]/70">👤 작성자: 학생회</span>
           <span>•</span>
-          <span>📅 등록: {formatDate(notice.createdAt)}</span>
+          <span>📅 등록: {formatDate(notice.created_at)}</span>
           <span>•</span>
-          <span>👀 조회수: {notice.views}</span>
+          <span>👀 조회수: {notice.view_count}</span>
         </div>
       </div>
 

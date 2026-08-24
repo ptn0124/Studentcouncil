@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-export interface HeaderProps {}
 import { createClient } from "@/lib/supabase/client";
+import type { Session } from "@supabase/supabase-js";
+
 export interface HeaderProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
 }
@@ -13,6 +13,7 @@ export interface HeaderProps {
 export default function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
 
   const navItems = [
     { name: "홈", href: "/" },
@@ -30,28 +31,21 @@ export default function Header() {
     return pathname.startsWith(path);
   };
 
-  const supabase = createClient();
-  const [session, setSession] = useState<any>(null);
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
+    const supabase = createClient();
     await supabase.auth.signOut();
-    window.location.href = "/";
-    window.location.replace('/login'); // 로그아웃 후 페이지 새로고침
+    window.location.replace("/login");
   };
 
   return (
@@ -83,16 +77,11 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 className={`text-[16px] font-semibold transition-colors duration-200 hover:text-[#f39733] relative py-1 ${
-                  active ? "text-[#f39733]" : "text-[#2c3e50]"
+                  active ? "text-[#f39733] font-bold" : "text-[#2c3e50]"
                 }`}
               >
                 {item.name}
                 {active && (
-                className={`text-[16px] font-medium transition-colors duration-300 hover:text-[#f39733] relative py-1 ${isActive(item.href) ? "text-[#f39733] font-bold" : "text-[#2c3e50]"
-                  }`}
-              >
-                {item.name}
-                {isActive(item.href) && (
                   <span className="absolute bottom-0 left-0 w-full h-[2px] bg-[#f39733] rounded-full" />
                 )}
               </Link>
@@ -100,9 +89,8 @@ export default function Header() {
           })}
         </nav>
 
-        {/* 로그인 버튼 */}
+        {/* 로그인/로그아웃 버튼 */}
         <div className="hidden md:flex items-center space-x-4">
-
           {session ? (
             <button
               onClick={handleLogout}
@@ -118,7 +106,6 @@ export default function Header() {
               로그인
             </Link>
           )}
-
         </div>
 
         {/* 모바일 메뉴 토글 버튼 */}
@@ -155,21 +142,6 @@ export default function Header() {
 
       {/* 모바일 메뉴 */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-[#2c3e50]/10 bg-[#faf8f5] px-4 py-4 space-y-3 shadow-inner">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-colors duration-200 ${
-                isActive(item.href)
-                  ? "bg-[#f39733]/10 text-[#f39733] font-bold"
-                  : "text-[#2c3e50] hover:bg-[#2c3e50]/5"
-              }`}
-            >
-              {item.name}
-            </Link>
-          ))}
         <div className="md:hidden border-t border-[#2c3e50]/10 bg-[#faf8f5] px-4 py-4 space-y-3 shadow-inner animate-fadeIn">
           {navItems.map((item) => {
             if (item.isDisabled) {
@@ -187,23 +159,36 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-all duration-300 ${isActive(item.href)
+                className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-colors duration-200 ${
+                  isActive(item.href)
                     ? "bg-[#f39733]/10 text-[#f39733] font-bold"
                     : "text-[#2c3e50] hover:bg-[#2c3e50]/5"
-                  }`}
+                }`}
               >
                 {item.name}
               </Link>
             );
           })}
           <div className="pt-2 border-t border-[#2c3e50]/10">
-            <Link
-              href="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block text-center text-[14px] font-semibold py-2.5 px-4 bg-[#2c3e50] text-[#faf8f5] rounded-lg hover:bg-[#f39733] transition-all duration-300"
-            >
-              로그인
-            </Link>
+            {session ? (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="block w-full text-center text-[14px] font-semibold py-2.5 px-4 bg-[#ff3e38] text-[#faf8f5] rounded-lg hover:opacity-90 transition-all duration-300"
+              >
+                로그아웃
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block text-center text-[14px] font-semibold py-2.5 px-4 bg-[#2c3e50] text-[#faf8f5] rounded-lg hover:bg-[#f39733] transition-all duration-300"
+              >
+                로그인
+              </Link>
+            )}
           </div>
         </div>
       )}

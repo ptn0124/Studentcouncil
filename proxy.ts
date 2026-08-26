@@ -29,7 +29,7 @@ export async function proxy(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
   const isPublicPage =
-    pathname === "/" || pathname === "/login" || pathname === "/signup";
+    pathname === "/" || pathname === "/login" || pathname === "/signup" || pathname === "/logo.png";
   const isApi = pathname.startsWith("/api");
 
   if (!session && !isPublicPage && !isApi) {

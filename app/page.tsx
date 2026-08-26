@@ -9,11 +9,17 @@ export interface MainPageProps {
 
 export default function Page() {
   const [officers, setOfficers] = useState<Officer[]>([]);
+  const [councilTerm, setCouncilTerm] = useState("32");
 
   useEffect(() => {
     fetch("/api/officers")
       .then((r) => r.json())
       .then((d) => setOfficers(d.officers ?? []))
+      .catch(() => {});
+
+    fetch("/api/config")
+      .then((r) => r.json())
+      .then((d) => setCouncilTerm(d.council_term ?? "32"))
       .catch(() => {});
   }, []);
 
@@ -54,7 +60,7 @@ export default function Page() {
 
           {/* 보조 본문 body: 16px */}
           <p className="text-[16px] text-[#2c3e50]/70 max-w-[600px] mx-auto leading-relaxed">
-            제32대 학생회 공식 홈페이지에 오신 것을 환영합니다. <br />
+            제{councilTerm}대 학생회 공식 홈페이지에 오신 것을 환영합니다. <br />
             우리는 학생 여러분의 소중한 목소리에 귀 기울입니다.
           </p>
         </div>
@@ -94,7 +100,7 @@ export default function Page() {
         <div className="text-center space-y-2">
           {/* H2: 20px */}
           <h2 className="text-[20px] font-extrabold text-[#2c3e50] tracking-tight">
-            제32대 학생회 임원진 소개
+            제{councilTerm}대 학생회 임원진 소개
           </h2>
           {/* caption: 14px */}
           <p className="text-[14px] text-[#2c3e50]/60">

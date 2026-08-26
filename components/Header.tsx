@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import type { Session } from "@supabase/supabase-js";
 
 export interface HeaderProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
@@ -33,24 +34,20 @@ export default function Header() {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
+    const supabase = createClient();
     await supabase.auth.signOut();
-    window.location.href = "/";
+    window.location.replace("/login");
   };
 
   return (
@@ -81,9 +78,8 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-[16px] font-semibold transition-colors duration-200 hover:text-[#f39733] relative py-1 ${
-                  active ? "text-[#f39733]" : "text-[#2c3e50]"
-                }`}
+                className={`text-[16px] font-semibold transition-colors duration-200 hover:text-[#f39733] relative py-1 ${active ? "text-[#f39733] font-bold" : "text-[#2c3e50]"
+                  }`}
               >
                 {item.name}
                 {active && (
@@ -148,56 +144,88 @@ export default function Header() {
       {/* 모바일 메뉴 */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-[#2c3e50]/10 bg-[#faf8f5] px-4 py-4 space-y-3 shadow-inner">
-          {navItems.map((item) => {
-            if (item.isDisabled) {
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-colors duration-200 ${isActive(item.href)
+                  ? "bg-[#f39733]/10 text-[#f39733] font-bold"
+                  : "text-[#2c3e50] hover:bg-[#2c3e50]/5"
+                }`}
+            >
+              {item.name}
+            </Link>
+          ))}
+          <div className="md:hidden border-t border-[#2c3e50]/10 bg-[#faf8f5] px-4 py-4 space-y-3 shadow-inner animate-fadeIn">
+            {navItems.map((item) => {
+              if (item.isDisabled) {
+                return (
+                  <span
+                    key={item.name}
+                    className="block text-[16px] font-medium py-2 px-3 text-[#2c3e50]/40 cursor-not-allowed select-none"
+                  >
+                    {item.name}
+                  </span>
+                );
+              }
+              const active = isActive(item.href);
               return (
-                <span
-                  key={item.name}
-                  className="block text-[16px] font-medium py-2 px-3 text-[#2c3e50]/40 cursor-not-allowed select-none"
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-colors duration-200 ${isActive(item.href)
+                      ? "bg-[#f39733]/10 text-[#f39733] font-bold"
+                      : "text-[#2c3e50] hover:bg-[#2c3e50]/5"
+                    }`}
                 >
                   {item.name}
-                </span>
+                </Link>
               );
-            }
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block text-[16px] font-medium py-2 px-3 rounded-lg transition-all duration-300 ${
-                  active
-                    ? "bg-[#f39733]/10 text-[#f39733] font-bold"
-                    : "text-[#2c3e50] hover:bg-[#2c3e50]/5"
-                }`}
-              >
-                {item.name}
-              </Link>
-            );
-          })}
-          <div className="pt-2 border-t border-[#2c3e50]/10">
-            {session ? (
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  handleLogout();
-                }}
-                className="w-full text-center text-[14px] font-semibold py-2.5 px-4 bg-[#ff3e38] text-[#faf8f5] rounded-lg hover:bg-[#d9302b] transition-all duration-300"
-              >
-                로그아웃
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-center text-[14px] font-semibold py-2.5 px-4 bg-[#2c3e50] text-[#faf8f5] rounded-lg hover:bg-[#f39733] transition-all duration-300"
-              >
-                로그인
-              </Link>
-            )}
+            })}
+            <div className="pt-2 border-t border-[#2c3e50]/10">
+              {session ? (
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="block w-full text-center text-[14px] font-semibold py-2.5 px-4 bg-[#ff3e38] text-[#faf8f5] rounded-lg hover:opacity-90 transition-all duration-300"
+                >
+                  로그아웃
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block text-center text-[14px] font-semibold py-2.5 px-4 bg-[#2c3e50] text-[#faf8f5] rounded-lg hover:bg-[#f39733] transition-all duration-300"
+                >
+                  로그인
+                </Link>
+              )}
+              {session ? (
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full text-center text-[14px] font-semibold py-2.5 px-4 bg-[#ff3e38] text-[#faf8f5] rounded-lg hover:bg-[#d9302b] transition-all duration-300"
+                >
+                  로그아웃
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block text-center text-[14px] font-semibold py-2.5 px-4 bg-[#2c3e50] text-[#faf8f5] rounded-lg hover:bg-[#f39733] transition-all duration-300"
+                >
+                  로그인
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
       )}
-    </header>
-  );
+        </header>
+      );
 }

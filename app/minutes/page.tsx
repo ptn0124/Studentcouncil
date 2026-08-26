@@ -40,13 +40,13 @@ export default function MinutesPage() {
     fetch("/api/minutes")
       .then((r) => r.json())
       .then((d) => setMinutes(d.minutes ?? []))
-      .catch(() => {});
+      .catch(() => { });
 
     // 로그인 사용자의 역할 확인 (admin/superadmin이면 추가·수정·삭제 가능)
     fetch("/api/me")
       .then((r) => r.json())
       .then((d) => setIsAdmin(["admin", "superadmin"].includes(d.role)))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const byDate = useMemo(
@@ -180,14 +180,14 @@ export default function MinutesPage() {
 
           <div className="right">
 
-            
+
 
             {isAdmin && ((adding && selected) || editingId) ? (
               <form className="form-card" onSubmit={editingId ? patch : submit} noValidate>
                 <div className="form-title">
-                  {editingId ? "회의록 수정" : "일정 추가"}
+                  {editingId ? "회의록 수정" : "회의록 추가"}
                   {selected && !editingId && (
-                    <span className="badge">{formatKo(ymd(selected))}</span>
+                    <span className="badge">{formatKo(ymd(selected))} </span>
                   )}
                 </div>
 
@@ -248,69 +248,69 @@ export default function MinutesPage() {
               </form>
             ) : active ? (
               <div className="right-panel">
-              <div className="detail-card-head">
-                {selected && dayItems.length > 1 && !adding && (
-                  <div className="day-list">
-                    <div className="day-label">{formatKo(ymd(selected))} 회의록</div>
-                    {dayItems.map((m) => (
-                      <div className="right-head-button">
-                        <button
-                          key={m.id}
-                          type="button"
-                          className={`card ${active?.id === m.id ? "active" : ""}`}
-                          onClick={() => setActiveId(m.id)}
-                        >
-                          <div className="title">{m.title}</div>
-                        </button>
-                        <button>
-                          
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                 )}
-              </div>
-              <div className="detail-card">
-                <div className="row between">
-                  <h2 className="detail-card-title">{active.title}</h2>
-                  {isAdmin && (
-                    <div className="detail-actions">
-                      <button
-                        type="button"
-                        className="button ghost sm"
-                        onClick={() => startEdit(active)}
-                      >
-                        수정
-                      </button>
-                      <button
-                        type="button"
-                        className="button ghost sm"
-                        onClick={() => remove(active.id)}
-                      >
-                        삭제
-                      </button>
-                      {selected && (
-                        <button
-                          type="button"
-                          className="button ghost sm"
-                          onClick={startAdd}
-                        >
-                          + 일정 추가
-                        </button>
-                      )}
+                <div className="detail-card-head">
+                  {selected && dayItems.length > 1 && !adding && (
+                    <div className="day-list">
+                      <div className="day-label">{formatKo(ymd(selected))} 회의록</div>
+                      {dayItems.map((m) => (
+                        <div className="right-head-button">
+                          <button
+                            key={m.id}
+                            type="button"
+                            className={`card ${active?.id === m.id ? "active" : ""}`}
+                            onClick={() => setActiveId(m.id)}
+                          >
+                            <div className="title">{m.title}</div>
+                          </button>
+                          <button>
+
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
-                <div className="meta">
-                  {formatKo(active.meeting_date)}
-                </div>
-                <div className="content">
-                  {active.content.split("\n").map((line, i) => (
-                    <p key={i}>{line}</p>
-                  ))}
+                <div className="detail-card">
+                  <div className="row between">
+                    <h2 className="detail-card-title">{active.title}</h2>
+                    {isAdmin && (
+                      <div className="detail-actions">
+                        <button
+                          type="button"
+                          className="button ghost sm"
+                          onClick={() => startEdit(active)}
+                        >
+                          수정
+                        </button>
+                        <button
+                          type="button"
+                          className="button ghost sm"
+                          onClick={() => remove(active.id)}
+                        >
+                          삭제
+                        </button>
+                        {selected && (
+                          <button
+                            type="button"
+                            className="button ghost sm"
+                            onClick={startAdd}
+                          >
+                            + 회의록 추가
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="meta">
+                    {formatKo(active.meeting_date)}
+                  </div>
+                  <div className="content">
+                    {active.content.split("\n").map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
             ) : (
               <div className="empty tall">
                 {selected ? (
@@ -327,7 +327,7 @@ export default function MinutesPage() {
                         className="button primary"
                         onClick={startAdd}
                       >
-                        일정 추가
+                        회의록 추가
                       </button>
                     )}
                   </>

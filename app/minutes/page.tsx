@@ -33,12 +33,19 @@ export default function MinutesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ title: "", content: "" });
+  const [isAdmin, setIsAdmin] = useState(false);
   const uid = useId();
 
   useEffect(() => {
     fetch("/api/minutes")
       .then((r) => r.json())
       .then((d) => setMinutes(d.minutes ?? []))
+      .catch(() => {});
+
+    // 로그인 사용자의 역할 확인 (admin/superadmin이면 추가·수정·삭제 가능)
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => setIsAdmin(["admin", "superadmin"].includes(d.role)))
       .catch(() => {});
   }, []);
 
@@ -175,7 +182,7 @@ export default function MinutesPage() {
 
             
 
-            {(adding && selected) || editingId ? (
+            {isAdmin && ((adding && selected) || editingId) ? (
               <form className="form-card" onSubmit={editingId ? patch : submit} noValidate>
                 <div className="form-title">
                   {editingId ? "회의록 수정" : "일정 추가"}
@@ -266,31 +273,33 @@ export default function MinutesPage() {
               <div className="detail-card">
                 <div className="row between">
                   <h2 className="detail-card-title">{active.title}</h2>
-                  <div className="detail-actions">
-                    <button
-                      type="button"
-                      className="button ghost sm"
-                      onClick={() => startEdit(active)}
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      className="button ghost sm"
-                      onClick={() => remove(active.id)}
-                    >
-                      삭제
-                    </button>
-                    {selected && (
+                  {isAdmin && (
+                    <div className="detail-actions">
                       <button
                         type="button"
                         className="button ghost sm"
-                        onClick={startAdd}
+                        onClick={() => startEdit(active)}
                       >
-                        + 일정 추가
+                        수정
                       </button>
-                    )}
-                  </div>
+                      <button
+                        type="button"
+                        className="button ghost sm"
+                        onClick={() => remove(active.id)}
+                      >
+                        삭제
+                      </button>
+                      {selected && (
+                        <button
+                          type="button"
+                          className="button ghost sm"
+                          onClick={startAdd}
+                        >
+                          + 일정 추가
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="meta">
                   {formatKo(active.meeting_date)}
@@ -312,13 +321,15 @@ export default function MinutesPage() {
                     <div>
                       {formatKo(ymd(selected))}에 등록된 회의록이 없습니다.
                     </div>
-                    <button
-                      type="button"
-                      className="button primary"
-                      onClick={startAdd}
-                    >
-                      일정 추가
-                    </button>
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        className="button primary"
+                        onClick={startAdd}
+                      >
+                        일정 추가
+                      </button>
+                    )}
                   </>
                 ) : (
                   "달력에서 날짜를 선택해 주세요."

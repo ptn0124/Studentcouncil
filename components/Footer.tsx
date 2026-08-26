@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { getCouncilTerm } from "@/lib/config";
 
 export interface FooterProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
 }
 
-export default function Footer() {
+export default async function Footer() {
+  const councilTerm = await getCouncilTerm();
   return (
     <footer className="w-full bg-[#2c3e50] text-[#faf8f5] py-12 border-t border-[#2c3e50]/20 mt-auto">
       <div className="max-w-[1280px] mx-auto px-4 md:px-8">
@@ -12,7 +14,7 @@ export default function Footer() {
           {/* 학생회 정보 */}
           <div className="space-y-4">
             <span className="text-[20px] font-bold tracking-tight">
-              🏫 제32대 학생회
+              🏫 제{councilTerm}대 학생회
             </span>
             <p className="text-[14px] text-[#faf8f5]/70 leading-relaxed">
               학생 여러분의 목소리에 항상 귀 기울이며, <br />
@@ -46,9 +48,8 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-[16px] font-semibold text-[#f39733]">연락처</h3>
             <ul className="space-y-2 text-[14px] text-[#faf8f5]/70">
-              <li>📍 위치: 학생회관 2층 201호</li>
-              <li>✉️ 이메일: support@studentcouncil.org</li>
-              <li>⏰ 운영: 평일 09:00 - 18:00</li>
+              <li>✉️ Email: [EMAIL_ADDRESS]</li>
+              <li>📞 Phone: [PHONE_NUMBER]</li>
             </ul>
           </div>
         </div>
@@ -59,12 +60,12 @@ export default function Footer() {
             © {new Date().getFullYear()} Student Council. All Rights Reserved.
           </p>
           <div className="flex space-x-6 text-[14px] text-[#faf8f5]/50">
-            <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
+            {/* <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
               개인정보처리방침
             </a>
             <a href="#" className="hover:text-[#f39733] transition-colors duration-200">
               이용약관
-            </a>
+            </a> */}
           </div>
         </div>
       </div>

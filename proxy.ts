@@ -27,6 +27,15 @@ export async function proxy(req: NextRequest) {
   } = await supabase.auth.getSession();
   const email = session?.user?.email ?? "";
 
+  const { pathname } = req.nextUrl;
+  const isPublicPage =
+    pathname === "/" || pathname === "/login" || pathname === "/signup" || pathname === "/logo.png";
+  const isApi = pathname.startsWith("/api");
+
+  if (!session && !isPublicPage && !isApi) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
   const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL;
 
   if (req.nextUrl.pathname.startsWith("/superadmin")) {
@@ -51,7 +60,6 @@ export async function proxy(req: NextRequest) {
       );
     }
   }
-
   return res;
 }
 

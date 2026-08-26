@@ -1,12 +1,28 @@
 "use client";
 
-import { mockOfficers } from "@/lib/mockData";
+import { useEffect, useState } from "react";
+import { Officer } from "@/types";
 
 export interface MainPageProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
 }
 
 export default function Page() {
+  const [officers, setOfficers] = useState<Officer[]>([]);
+  const [councilTerm, setCouncilTerm] = useState("32");
+
+  useEffect(() => {
+    fetch("/api/officers")
+      .then((r) => r.json())
+      .then((d) => setOfficers(d.officers ?? []))
+      .catch(() => {});
+
+    fetch("/api/config")
+      .then((r) => r.json())
+      .then((d) => setCouncilTerm(d.council_term ?? "32"))
+      .catch(() => {});
+  }, []);
+
   const handleScrollToOfficers = () => {
     document.getElementById("officers-section")?.scrollIntoView({
       behavior: "smooth",
@@ -44,7 +60,7 @@ export default function Page() {
 
           {/* 보조 본문 body: 16px */}
           <p className="text-[16px] text-[#2c3e50]/70 max-w-[600px] mx-auto leading-relaxed">
-            제32대 학생회 공식 홈페이지에 오신 것을 환영합니다. <br />
+            제{councilTerm}대 학생회 공식 홈페이지에 오신 것을 환영합니다. <br />
             우리는 학생 여러분의 소중한 목소리에 귀 기울입니다.
           </p>
         </div>
@@ -84,7 +100,7 @@ export default function Page() {
         <div className="text-center space-y-2">
           {/* H2: 20px */}
           <h2 className="text-[20px] font-extrabold text-[#2c3e50] tracking-tight">
-            제32대 학생회 임원진 소개
+            제{councilTerm}대 학생회 임원진 소개
           </h2>
           {/* caption: 14px */}
           <p className="text-[14px] text-[#2c3e50]/60">
@@ -93,8 +109,13 @@ export default function Page() {
         </div>
 
         {/* 임원진 카드 그리드 */}
+        {officers.length === 0 ? (
+          <p className="text-center text-[14px] text-[#2c3e50]/40 py-10">
+            등록된 임원진 정보가 없습니다.
+          </p>
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {mockOfficers.map((officer) => (
+          {officers.map((officer) => (
             <div
               key={officer.id}
               className="group bg-white/70 backdrop-blur-md border border-[#2c3e50]/10 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-xl hover:shadow-[#f39733]/5 hover:border-[#f39733]/30 hover:-translate-y-1"
@@ -129,6 +150,7 @@ export default function Page() {
             </div>
           ))}
         </div>
+        )}
       </section>
     </div>
   );

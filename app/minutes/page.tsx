@@ -33,13 +33,20 @@ export default function MinutesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ title: "", content: "" });
+  const [isAdmin, setIsAdmin] = useState(false);
   const uid = useId();
 
   useEffect(() => {
     fetch("/api/minutes")
       .then((r) => r.json())
       .then((d) => setMinutes(d.minutes ?? []))
-      .catch(() => {});
+      .catch(() => { });
+
+    // 로그인 사용자의 역할 확인 (admin/superadmin이면 추가·수정·삭제 가능)
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => setIsAdmin(["admin", "superadmin"].includes(d.role)))
+      .catch(() => { });
   }, []);
 
   const byDate = useMemo(
@@ -85,7 +92,7 @@ export default function MinutesPage() {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const updated: Minute = await res.json();
+      const { minute: updated }: { minute: Minute } = await res.json();
       setMinutes((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
       setEditingId(null);
     } catch (err) {
@@ -122,7 +129,7 @@ export default function MinutesPage() {
         }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const created: Minute = await res.json();
+      const { minute: created }: { minute: Minute } = await res.json();
       setMinutes((prev) => [...prev, created]);
       setAdding(false);
       setActiveId(created.id);
@@ -173,14 +180,14 @@ export default function MinutesPage() {
 
           <div className="right">
 
-            
 
-            {(adding && selected) || editingId ? (
+
+            {isAdmin && ((adding && selected) || editingId) ? (
               <form className="form-card" onSubmit={editingId ? patch : submit} noValidate>
                 <div className="form-title">
-                  {editingId ? "회의록 수정" : "일정 추가"}
+                  {editingId ? "회의록 수정" : "회의록 추가"}
                   {selected && !editingId && (
-                    <span className="badge">{formatKo(ymd(selected))}</span>
+                    <span className="badge">{formatKo(ymd(selected))} </span>
                   )}
                 </div>
 
@@ -241,67 +248,69 @@ export default function MinutesPage() {
               </form>
             ) : active ? (
               <div className="right-panel">
-              <div className="detail-card-head">
-                {selected && dayItems.length > 1 && !adding && (
-                  <div className="day-list">
-                    <div className="day-label">{formatKo(ymd(selected))} 회의록</div>
-                    {dayItems.map((m) => (
-                      <div className="right-head-button">
+                <div className="detail-card-head">
+                  {selected && dayItems.length > 1 && !adding && (
+                    <div className="day-list">
+                      <div className="day-label">{formatKo(ymd(selected))} 회의록</div>
+                      {dayItems.map((m) => (
+                        <div className="right-head-button">
+                          <button
+                            key={m.id}
+                            type="button"
+                            className={`card ${active?.id === m.id ? "active" : ""}`}
+                            onClick={() => setActiveId(m.id)}
+                          >
+                            <div className="title">{m.title}</div>
+                          </button>
+                          <button>
+
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="detail-card">
+                  <div className="row between">
+                    <h2 className="detail-card-title">{active.title}</h2>
+                    {isAdmin && (
+                      <div className="detail-actions">
                         <button
-                          key={m.id}
                           type="button"
-                          className={`card ${active?.id === m.id ? "active" : ""}`}
-                          onClick={() => setActiveId(m.id)}
+                          className="button ghost sm"
+                          onClick={() => startEdit(active)}
                         >
-                          <div className="title">{m.title}</div>
+                          수정
                         </button>
-                        <button>
-                          
+                        <button
+                          type="button"
+                          className="button ghost sm"
+                          onClick={() => remove(active.id)}
+                        >
+                          삭제
                         </button>
+                        {selected && (
+                          <button
+                            type="button"
+                            className="button ghost sm"
+                            onClick={startAdd}
+                          >
+                            + 회의록 추가
+                          </button>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                 )}
-              </div>
-              <div className="detail-card">
-                <div className="row between">
-                  <h2 className="detail-card-title">{active.title}</h2>
-                  <div className="detail-actions">
-                    <button
-                      type="button"
-                      className="button ghost sm"
-                      onClick={() => startEdit(active)}
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      className="button ghost sm"
-                      onClick={() => remove(active.id)}
-                    >
-                      삭제
-                    </button>
-                    {selected && (
-                      <button
-                        type="button"
-                        className="button ghost sm"
-                        onClick={startAdd}
-                      >
-                        + 일정 추가
-                      </button>
                     )}
                   </div>
-                </div>
-                <div className="meta">
-                  {formatKo(active.meeting_date)}
-                </div>
-                <div className="content">
-                  {active.content.split("\n").map((line, i) => (
-                    <p key={i}>{line}</p>
-                  ))}
+                  <div className="meta">
+                    {formatKo(active.meeting_date)}
+                  </div>
+                  <div className="content">
+                    {active.content.split("\n").map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
             ) : (
               <div className="empty tall">
                 {selected ? (
@@ -312,13 +321,15 @@ export default function MinutesPage() {
                     <div>
                       {formatKo(ymd(selected))}에 등록된 회의록이 없습니다.
                     </div>
-                    <button
-                      type="button"
-                      className="button primary"
-                      onClick={startAdd}
-                    >
-                      일정 추가
-                    </button>
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        className="button primary"
+                        onClick={startAdd}
+                      >
+                        회의록 추가
+                      </button>
+                    )}
                   </>
                 ) : (
                   "달력에서 날짜를 선택해 주세요."

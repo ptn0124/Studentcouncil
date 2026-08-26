@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Notice } from "@/types";
 
 export interface NoticeDetailProps {
@@ -10,8 +11,19 @@ export interface NoticeDetailProps {
 
 export default function NoticeDetailPage({ params }: NoticeDetailProps) {
   const { id } = use(params);
+  const router = useRouter();
   const [notice, setNotice] = useState<Notice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // 관리자 여부 + 수정 상태
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    content: "",
+    is_pinned: false,
+  });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchNoticeDetail = async () => {
@@ -32,6 +44,14 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
     fetchNoticeDetail();
   }, [id]);
 
+  // 로그인 사용자의 역할 확인 (admin/superadmin이면 수정·삭제 노출)
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => setIsAdmin(["admin", "superadmin"].includes(d.role)))
+      .catch(() => {});
+  }, []);
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("ko-KR", {
@@ -41,6 +61,54 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  // 수정 시작 (현재 값으로 폼 채우기)
+  const startEdit = () => {
+    if (!notice) return;
+    setEditForm({
+      title: notice.title,
+      content: notice.content,
+      is_pinned: notice.is_pinned,
+    });
+    setIsEditing(true);
+  };
+
+  // 수정 저장 (PATCH /api/notices/[id])
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editForm.title.trim() || !editForm.content.trim()) {
+      return alert("제목과 내용을 입력해 주세요.");
+    }
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/notices/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? "수정 실패");
+      const data = await res.json();
+      setNotice(data.notice);
+      setIsEditing(false);
+    } catch (err) {
+      alert("공지 수정에 실패했습니다: " + (err as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 삭제 (DELETE /api/notices/[id])
+  const handleDelete = async () => {
+    if (!confirm("이 공지를 삭제하시겠습니까?")) return;
+    try {
+      const res = await fetch(`/api/notices/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error((await res.json()).error ?? "삭제 실패");
+      alert("공지가 삭제되었습니다.");
+      router.push("/notices");
+    } catch (err) {
+      alert("공지 삭제에 실패했습니다: " + (err as Error).message);
+    }
   };
 
   if (isLoading) {
@@ -87,37 +155,117 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
         </span>
       </div>
 
-      {/* 헤더 영역 */}
-      <div className="space-y-4 pb-6 border-b border-[#2c3e50]/10">
-        <div className="flex items-center gap-2">
-          {notice.isPinned && (
-            <span className="bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-2.5 py-1 rounded-md shadow-sm">
-              📌 중요 공지
-            </span>
-          )}
-        </div>
+      {isEditing ? (
+        /* ── 수정 모드 ── */
+        <form
+          onSubmit={handleUpdate}
+          className="bg-white/70 backdrop-blur-sm border border-[#2c3e50]/10 rounded-2xl p-6 md:p-10 space-y-4 shadow-sm"
+        >
+          <h2 className="text-[20px] font-bold text-[#2c3e50]">공지 수정</h2>
 
-        {/* H1: 30px */}
-        <h1 className="text-[30px] font-extrabold text-[#2c3e50] leading-snug tracking-tight">
-          {notice.title}
-        </h1>
+          <input
+            type="text"
+            placeholder="제목"
+            value={editForm.title}
+            onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+            className="w-full text-[16px] px-4 py-3 bg-white border border-[#2c3e50]/20 rounded-xl focus:outline-none focus:border-[#f39733]"
+          />
 
-        {/* 메타정보 (캡션) caption: 14px */}
-        <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50">
-          <span className="font-medium text-[#2c3e50]/70">👤 작성자: {notice.author || "작성자 없음"}</span>
-          <span>•</span>
-          <span>📅 등록: {formatDate(notice.createdAt)}</span>
-          <span>•</span>
-          <span>👀 조회수: {notice.views}</span>
-        </div>
-      </div>
+          <textarea
+            placeholder="내용"
+            rows={10}
+            value={editForm.content}
+            onChange={(e) => setEditForm({ ...editForm, content: e.target.value })}
+            className="w-full text-[16px] px-4 py-3 bg-white border border-[#2c3e50]/20 rounded-xl focus:outline-none focus:border-[#f39733] resize-none"
+          />
 
-      {/* 본문 영역 body: 16px */}
-      <div className="bg-white/70 backdrop-blur-sm border border-[#2c3e50]/10 rounded-2xl p-6 md:p-10 shadow-sm">
-        <div className="text-[16px] text-[#2c3e50] whitespace-pre-wrap leading-relaxed space-y-4">
-          {notice.content}
-        </div>
-      </div>
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 cursor-pointer text-[14px] text-[#2c3e50]/70 select-none">
+              <input
+                type="checkbox"
+                checked={editForm.is_pinned}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, is_pinned: e.target.checked })
+                }
+                className="w-4 h-4 accent-[#f39733]"
+              />
+              <span>📌 중요 공지로 고정</span>
+            </label>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="text-[14px] font-semibold px-4 py-2.5 text-[#2c3e50] border border-[#2c3e50]/20 rounded-xl hover:bg-[#2c3e50]/5"
+              >
+                취소
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="text-[14px] font-semibold px-5 py-2.5 bg-[#f39733] text-[#faf8f5] rounded-xl hover:opacity-90 transition-all disabled:bg-gray-300"
+              >
+                {saving ? "저장 중..." : "저장"}
+              </button>
+            </div>
+          </div>
+        </form>
+      ) : (
+        /* ── 보기 모드 ── */
+        <>
+          {/* 헤더 영역 */}
+          <div className="space-y-4 pb-6 border-b border-[#2c3e50]/10">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                {notice.is_pinned && (
+                  <span className="bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-2.5 py-1 rounded-md shadow-sm">
+                    📌 중요 공지
+                  </span>
+                )}
+              </div>
+
+              {/* 관리자 전용: 수정·삭제 */}
+              {isAdmin && (
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={startEdit}
+                    className="text-[13px] font-semibold px-3.5 py-1.5 text-[#2c3e50] border border-[#2c3e50]/20 rounded-lg hover:bg-[#2c3e50]/5 transition-colors"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="text-[13px] font-semibold px-3.5 py-1.5 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* H1: 30px */}
+            <h1 className="text-[30px] font-extrabold text-[#2c3e50] leading-snug tracking-tight">
+              {notice.title}
+            </h1>
+
+            {/* 메타정보 (캡션) caption: 14px */}
+            <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50">
+              <span className="font-medium text-[#2c3e50]/70">👤 작성자: 학생회</span>
+              <span>•</span>
+              <span>📅 등록: {formatDate(notice.created_at)}</span>
+              <span>•</span>
+              <span>👀 조회수: {notice.view_count}</span>
+            </div>
+          </div>
+
+          {/* 본문 영역 body: 16px */}
+          <div className="bg-white/70 backdrop-blur-sm border border-[#2c3e50]/10 rounded-2xl p-6 md:p-10 shadow-sm">
+            <div className="text-[16px] text-[#2c3e50] whitespace-pre-wrap leading-relaxed space-y-4">
+              {notice.content}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* 하단 이동 버튼 */}
       <div className="flex justify-between items-center pt-4 border-t border-[#2c3e50]/10">

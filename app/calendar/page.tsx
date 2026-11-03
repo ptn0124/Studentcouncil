@@ -6,7 +6,7 @@ interface CalendarEvent {
   id: string;
   title: string;
   start_date: string; // YYYY-MM-DD
-  end_date: string;   // YYYY-MM-DD
+  end_date: string; // YYYY-MM-DD
   description?: string;
 }
 
@@ -86,7 +86,7 @@ export default function CalendarPage() {
 
     // 해당 날짜에 이미 등록된 일정이 있는지 확인
     const existingEvent = events.find(
-      (evt) => evt.start_date <= dateStr && evt.end_date >= dateStr
+      (evt) => evt.start_date <= dateStr && evt.end_date >= dateStr,
     );
 
     if (existingEvent) {
@@ -144,7 +144,9 @@ export default function CalendarPage() {
       }
 
       if (response.ok) {
-        alert(editingEventId ? "일정이 수정되었습니다." : "일정이 등록되었습니다.");
+        alert(
+          editingEventId ? "일정이 수정되었습니다." : "일정이 등록되었습니다.",
+        );
         setIsModalOpen(false);
         fetchEvents(); // 목록 새로고침
       } else {
@@ -188,7 +190,9 @@ export default function CalendarPage() {
       {/* 상단 헤더 & 권한 테스트 토글 */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-[28px] font-bold text-secondary">학사 일정 캘린더</h1>
+          <h1 className="text-[28px] font-bold text-secondary">
+            학사 일정 캘린더
+          </h1>
           <p className="text-gray-600 text-[14px]">
             {isAdmin
               ? "💡 날짜를 클릭하면 관리자 권한으로 일정을 등록·수정할 수 있습니다."
@@ -202,9 +206,7 @@ export default function CalendarPage() {
           <button
             onClick={() => setIsAdmin(!isAdmin)}
             className={`px-3 py-1 rounded-lg font-bold transition-all ${
-              isAdmin
-                ? "bg-primary text-white"
-                : "bg-gray-300 text-gray-700"
+              isAdmin ? "bg-primary text-white" : "bg-gray-300 text-gray-700"
             }`}
           >
             {isAdmin ? "관리자 (수정 가능)" : "학생 (읽기 전용)"}
@@ -258,7 +260,10 @@ export default function CalendarPage() {
         <div className="grid grid-cols-7 gap-1">
           {/* 이전 달 빈 칸 */}
           {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-            <div key={`empty-${index}`} className="h-28 bg-gray-50/50 rounded-xl" />
+            <div
+              key={`empty-${index}`}
+              className="h-28 bg-gray-50/50 rounded-xl"
+            />
           ))}
 
           {/* 이번 달 날짜 셀 */}
@@ -268,18 +273,19 @@ export default function CalendarPage() {
 
             // 해당 날짜에 걸쳐있는 일정들 찾기
             const dayEvents = events.filter(
-              (evt) => evt.start_date <= dateStr && evt.end_date >= dateStr
+              (evt) => evt.start_date <= dateStr && evt.end_date >= dateStr,
             );
 
-            const isToday =
-              new Date().toISOString().split("T")[0] === dateStr;
+            const isToday = new Date().toISOString().split("T")[0] === dateStr;
 
             return (
               <div
                 key={dayNumber}
                 onClick={() => handleDateClick(dayNumber)}
                 className={`h-28 p-2 border border-gray-100 rounded-xl transition-all flex flex-col justify-start overflow-hidden ${
-                  isAdmin ? "cursor-pointer hover:border-primary hover:shadow-sm" : ""
+                  isAdmin
+                    ? "cursor-pointer hover:border-primary hover:shadow-sm"
+                    : ""
                 } ${isToday ? "bg-blue-50/40 border-primary/30" : "bg-white"}`}
               >
                 <div className="flex justify-between items-center mb-1">
@@ -320,7 +326,8 @@ export default function CalendarPage() {
               {editingEventId ? "학사 일정 수정" : "새 학사 일정 등록"}
             </h3>
             <p className="text-[13px] text-gray-500 mb-6">
-              선택한 날짜: <span className="font-bold text-primary">{selectedDate}</span>
+              선택한 날짜:{" "}
+              <span className="font-bold text-primary">{selectedDate}</span>
             </p>
 
             <form onSubmit={handleSaveEvent} className="space-y-4">

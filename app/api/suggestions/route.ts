@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
+import { getVerifiedSession } from '@/lib/server/auth'
 import { NextResponse } from 'next/server'
+import { cleanAuthorName } from '@/lib/studentId'
 
 // author_* 컬럼이 아직 없을 때(마이그레이션 미적용) 나는 오류인지 판별
 // PGRST204: 스키마 캐시에 없는 컬럼, 42703: undefined_column
@@ -16,7 +18,7 @@ function isMissingAuthorColumn(error: { code?: string; message?: string } | null
 export async function GET() {
     const supabase = await createClient()
 
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session } } = await getVerifiedSession(supabase)
     if (!session) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
     // select('*'): author_* 컬럼이 아직 없는 DB(마이그레이션 전)에서도 오류 없이 조회되도록
@@ -35,7 +37,7 @@ export async function GET() {
 export async function POST(req: Request) {
     const supabase = await createClient()
 
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session } } = await getVerifiedSession(supabase)
     if (!session) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
     const { content } = await req.json()
@@ -47,7 +49,8 @@ export async function POST(req: Request) {
     const meta = session.user.user_metadata ?? {}
     const author = {
         author_id: session.user.id,
-        author_name: meta.full_name ?? meta.name ?? null,
+        // 학교 계정 표시 이름에 붙은 이메일 아이디(예: 박태환bi202621208)는 떼고 저장
+        author_name: cleanAuthorName(meta.full_name ?? meta.name ?? null, session.user.email),
         author_email: session.user.email ?? null,
     }
 

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { getVerifiedSession } from '@/lib/server/auth'
 import { NextResponse } from 'next/server'
 
 const BASE_COLUMNS = 'id, title, content, meeting_date, author_id, created_at, updated_at'
@@ -6,6 +7,10 @@ const WITH_ATTACHMENTS = `${BASE_COLUMNS}, minute_attachments(id, minute_id, fil
 
 export async function GET() {
     const supabase = await createClient()
+
+    // 회의록은 로그인한 학생만 열람 (페이지·상세 API와 동일하게)
+    const { data: { session } } = await getVerifiedSession(supabase)
+    if (!session) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
     const query = (columns: string) =>
         supabase
@@ -28,7 +33,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
     const supabase = await createClient()
-    const { data: { session }} = await supabase.auth.getSession()
+    const { data: { session }} = await getVerifiedSession(supabase)
     if (!session) return NextResponse.json({ error: '로그인이 필요합니다.'}, {status: 401})
 
     const { data: profile } = await supabase

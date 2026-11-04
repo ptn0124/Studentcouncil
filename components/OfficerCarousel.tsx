@@ -59,7 +59,7 @@ function OfficerCard({ officer }: { officer: Officer }) {
 /**
  * 임원진 자동 순환 슬라이드 (외부 라이브러리 없이 구현)
  * - 버튼 조작 없이 왼쪽으로 천천히, 끊김 없이 계속 흐른다 (무한 루프)
- * - 마우스를 올리거나 터치하고 있는 동안은 멈춘다
+ * - 마우스를 올려도 멈추지 않는다 (모바일에서 손가락으로 누르고 있는 동안만 멈춤)
  * - 화면 폭에 따라 1~4장 노출
  */
 export default function OfficerCarousel({ officers }: { officers: Officer[] }) {
@@ -108,8 +108,6 @@ export default function OfficerCarousel({ officers }: { officers: Officer[] }) {
     <div
       ref={viewportRef}
       className="relative overflow-hidden py-2"
-      onMouseEnter={pause}
-      onMouseLeave={resume}
       onTouchStart={pause}
       onTouchEnd={resume}
       onTouchCancel={resume}

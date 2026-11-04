@@ -1,9 +1,17 @@
+export interface MinuteFile {
+  id: string;
+  file_name: string;
+  size: number;
+  mime_type: string | null;
+}
+
 export interface Minute {
-  id: number;
+  id: string;
   title: string;
-  date: string;
-  agenda: string[];
   content: string;
-  fileUrl: string;
-  createdAt: string;
+  meeting_date: string;
+  author_id: string | null;
+  created_at: string;
+  updated_at: string;
+  files: MinuteFile[];
 }

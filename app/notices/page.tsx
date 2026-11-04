@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Notice } from "@/types";
+import { PinIcon, UserIcon, CalendarIcon, EyeIcon, SearchIcon } from "@/components/Icons";
 
 export interface NoticeListProps {
   // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
@@ -199,7 +200,7 @@ export default function NoticesPage() {
                     }
                     className="w-4 h-4 accent-[#f39733]"
                   />
-                  <span>📌 중요 공지로 고정</span>
+                  <span className="inline-flex items-center gap-1"><PinIcon width={14} height={14} /> 중요 공지로 고정</span>
                 </label>
 
                 <div className="flex gap-2">
@@ -235,12 +236,12 @@ export default function NoticesPage() {
         </div>
       ) : notices.length === 0 ? (
         <div className="text-center py-20 bg-white/50 backdrop-blur-sm rounded-2xl border border-[#2c3e50]/5">
-          <p className="text-[24px] mb-3">🔍</p>
+          <SearchIcon width={28} height={28} className="mx-auto mb-3 text-[#2c3e50]/40" />
           <p className="text-[16px] text-[#2c3e50]/60 font-medium">검색 결과가 없습니다.</p>
           <p className="text-[14px] text-[#2c3e50]/40 mt-1">다른 검색어를 입력해 보세요.</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {notices.map((notice) => {
             return (
               <Link
@@ -254,30 +255,25 @@ export default function NoticesPage() {
                 {/* 중요 핀 표식 */}
                 {notice.is_pinned && (
                   <div className="absolute right-0 top-0 bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-3.5 py-1.5 rounded-bl-xl flex items-center gap-1 shadow-sm">
-                    📌 <span>중요</span>
+                    <PinIcon width={13} height={13} /> <span>중요</span>
                   </div>
                 )}
 
                 <div className="space-y-3">
                   {/* 제목 H2: 20px */}
-                  <h2 className={`text-[20px] font-bold text-[#2c3e50] group-hover:text-[#f39733] transition-colors duration-300 pr-16 leading-snug`}>
+                  <h2 className="text-[20px] font-bold text-[#2c3e50] group-hover:text-[#f39733] transition-colors duration-300 pr-16 leading-snug break-words [overflow-wrap:anywhere]">
                     {notice.title}
                   </h2>
-
-                  {/* 본문 미리보기 (일부만) body: 16px */}
-                  <p className="text-[16px] text-[#2c3e50]/70 line-clamp-2 leading-relaxed">
-                    {notice.content}
-                  </p>
 
                   {/* 메타정보 (캡션) caption: 14px */}
                   <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50 pt-2">
                     <span className="flex items-center gap-1 font-medium text-[#2c3e50]/60">
-                      👤 학생회
+                      <UserIcon /> 학생회
                     </span>
                     <span>•</span>
-                    <span>📅 {formatDate(notice.created_at)}</span>
+                    <span className="flex items-center gap-1"><CalendarIcon /> {formatDate(notice.created_at)}</span>
                     <span>•</span>
-                    <span>👀 조회수 {notice.view_count}</span>
+                    <span className="flex items-center gap-1"><EyeIcon /> 조회수 {notice.view_count}</span>
                   </div>
                 </div>
               </Link>

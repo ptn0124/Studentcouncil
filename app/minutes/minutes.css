@@ -36,8 +36,7 @@
   min-height: 100vh;
   background: #faf8f5;
   color: var(--ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+  font-family: inherit;
   display: flex;
   align-items: flex-start;
   -webkit-font-smoothing: antialiased;

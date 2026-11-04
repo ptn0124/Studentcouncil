@@ -1,4 +1,3 @@
-@import url("https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/subsets/Paperlogy-dynamic-subset.css");
 
 .main{
   display: flex;
@@ -52,7 +51,7 @@
 
 .title {
   font-size: 2.5rem;
-  font-family: "LH", sans-serif;
+  font-family: inherit;
   font-weight: 750; /* Bold */
   color: #63656A;
 }

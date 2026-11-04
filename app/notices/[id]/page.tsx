@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Notice } from "@/types";
+import { PinIcon, UserIcon, CalendarIcon, EyeIcon, AlertIcon } from "@/components/Icons";
 
 export interface NoticeDetailProps {
   params: Promise<{ id: string }>;
@@ -34,6 +35,16 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
         }
         const data = await res.json();
         setNotice(data.notice);
+
+        // 조회수는 GET과 분리된 전용 엔드포인트로 증가시킨다 (서버가 중복 방지)
+        fetch(`/api/notices/${id}/view`, { method: "POST" })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((v) => {
+            if (v && typeof v.view_count === "number") {
+              setNotice((prev) => (prev ? { ...prev, view_count: v.view_count } : prev));
+            }
+          })
+          .catch(() => {});
       } catch (error) {
         console.error("Failed to fetch notice detail:", error);
       } finally {
@@ -123,7 +134,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
   if (!notice) {
     return (
       <div className="text-center py-24 bg-white/50 backdrop-blur-sm rounded-2xl border border-[#2c3e50]/10 max-w-[600px] mx-auto space-y-4">
-        <p className="text-[32px]">⚠️</p>
+        <AlertIcon width={36} height={36} className="mx-auto text-[#f39733]" />
         <h2 className="text-[20px] font-bold text-[#2c3e50]">존재하지 않는 공지사항</h2>
         <p className="text-[14px] text-[#2c3e50]/50">삭제되었거나 잘못된 경로입니다.</p>
         <div className="pt-4">
@@ -189,7 +200,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
                 }
                 className="w-4 h-4 accent-[#f39733]"
               />
-              <span>📌 중요 공지로 고정</span>
+              <span className="inline-flex items-center gap-1"><PinIcon width={14} height={14} /> 중요 공지로 고정</span>
             </label>
 
             <div className="flex gap-2">
@@ -219,7 +230,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
               <div className="flex items-center gap-2">
                 {notice.is_pinned && (
                   <span className="bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-2.5 py-1 rounded-md shadow-sm">
-                    📌 중요 공지
+                    <span className="inline-flex items-center gap-1"><PinIcon width={13} height={13} /> 중요 공지</span>
                   </span>
                 )}
               </div>
@@ -244,23 +255,23 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
             </div>
 
             {/* H1: 30px */}
-            <h1 className="text-[30px] font-extrabold text-[#2c3e50] leading-snug tracking-tight">
+            <h1 className="text-[30px] font-extrabold text-[#2c3e50] leading-snug tracking-tight break-words [overflow-wrap:anywhere]">
               {notice.title}
             </h1>
 
             {/* 메타정보 (캡션) caption: 14px */}
             <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50">
-              <span className="font-medium text-[#2c3e50]/70">👤 작성자: 학생회</span>
+              <span className="flex items-center gap-1 font-medium text-[#2c3e50]/70"><UserIcon /> 작성자: 학생회</span>
               <span>•</span>
-              <span>📅 등록: {formatDate(notice.created_at)}</span>
+              <span className="flex items-center gap-1"><CalendarIcon /> 등록: {formatDate(notice.created_at)}</span>
               <span>•</span>
-              <span>👀 조회수: {notice.view_count}</span>
+              <span className="flex items-center gap-1"><EyeIcon /> 조회수: {notice.view_count}</span>
             </div>
           </div>
 
           {/* 본문 영역 body: 16px */}
           <div className="bg-white/70 backdrop-blur-sm border border-[#2c3e50]/10 rounded-2xl p-6 md:p-10 shadow-sm">
-            <div className="text-[16px] text-[#2c3e50] whitespace-pre-wrap leading-relaxed space-y-4">
+            <div className="text-[16px] text-[#2c3e50] whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">
               {notice.content}
             </div>
           </div>

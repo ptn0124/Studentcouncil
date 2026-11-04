@@ -1,20 +1,14 @@
-import { createClient } from "@/lib/supabase/server";
+import { requireUser, studentIdFromEmail } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-// 현재 로그인 사용자의 역할 조회 (로그인 안 했으면 role: null)
+// 현재 로그인 사용자의 정보 조회 (로그인 안 했으면 role: null)
 export async function GET() {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const auth = await requireUser();
+  if (!auth.ok) return NextResponse.json({ role: null });
 
-  if (!session) return NextResponse.json({ role: null });
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", session.user.id)
-    .single();
-
-  return NextResponse.json({ role: profile?.role ?? "user" });
+  return NextResponse.json({
+    role: auth.role,
+    email: auth.user.email ?? null,
+    student_id: studentIdFromEmail(auth.user.email),
+  });
 }

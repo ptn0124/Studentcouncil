@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/feedback/FeedbackProvider";
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ export default function SuggestionDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { notify, confirm } = useFeedback();
   const { id } = use(params);
   const router = useRouter();
   const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
@@ -63,22 +65,22 @@ export default function SuggestionDetailPage({
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? res.statusText);
       const { suggestion: updated } = await res.json();
       setSuggestion((prev) => (prev ? { ...prev, ...updated } : updated));
-      alert("저장되었습니다.");
+      notify("저장되었습니다.", "success");
     } catch (err) {
-      alert("저장에 실패했습니다: " + (err as Error).message);
+      notify("저장에 실패했습니다: " + (err as Error).message, "error");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm("이 건의글을 삭제하시겠습니까?")) return;
+    if (!(await confirm("이 건의글을 삭제하시겠습니까?", { danger: true, confirmText: "삭제" }))) return;
     try {
       const res = await fetch(`/api/suggestions/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? res.statusText);
       router.push("/suggestions");
     } catch (err) {
-      alert("삭제에 실패했습니다: " + (err as Error).message);
+      notify("삭제에 실패했습니다: " + (err as Error).message, "error");
     }
   };
 

@@ -1,14 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Script from "next/script";
 import "./login.css";
 
-// 구글 로그인 버튼이 이 시간(ms) 안에 그려지지 않으면 새로고침 안내 문구를 보여준다.
-const BUTTON_HINT_DELAY_MS = 3000;
-
 export default function LoginPage() {
-  const [showReloadHint, setShowReloadHint] = useState(false);
-
   function decodeJWT(token: string) {
     const base64Url = token.split(".")[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -50,27 +45,6 @@ export default function LoginPage() {
       .handleCredentialResponse = handleCredentialResponse;
   });
 
-  // 구글 버튼(.g_id_signin 내부 iframe)이 렌더링됐는지 감시 → 일정 시간 동안 안 보이면 안내 문구 노출
-  useEffect(() => {
-    const container = document.querySelector(".g_id_signin");
-    if (!container) return;
-
-    const isRendered = () => container.childElementCount > 0;
-    const timer = window.setTimeout(() => {
-      if (!isRendered()) setShowReloadHint(true);
-    }, BUTTON_HINT_DELAY_MS);
-
-    const observer = new MutationObserver(() => {
-      if (isRendered()) setShowReloadHint(false);
-    });
-    observer.observe(container, { childList: true });
-
-    return () => {
-      window.clearTimeout(timer);
-      observer.disconnect();
-    };
-  }, []);
-
 /*
   function dataRecv(data: any) {
     //console.log(data.role);
@@ -99,15 +73,14 @@ export default function LoginPage() {
               //data-client_id="57121165236-paes4i9jg5gn8b1h8ao97l0l13m2vmqt.apps.googleusercontent.com"
             ></div>
             <div className="g_id_signin"></div>
-            {showReloadHint && (
-              <p className="reload-hint" role="status">
-                로그인 버튼이 보이지 않으면{" "}
-                <button type="button" onClick={() => window.location.reload()}>
-                  새로고침
-                </button>
-                해 주세요.
-              </p>
-            )}
+            {/* 버튼이 늦게 뜨거나 안 뜰 때를 위한 안내 (항상 작게 표시) */}
+            <p className="reload-hint">
+              로그인 버튼이 보이지 않으면{" "}
+              <button type="button" onClick={() => window.location.reload()}>
+                새로고침
+              </button>
+              해 주세요.
+            </p>
           </div>
         </div>
       </div>

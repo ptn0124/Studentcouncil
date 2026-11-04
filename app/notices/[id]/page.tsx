@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/feedback/FeedbackProvider";
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ export interface NoticeDetailProps {
 }
 
 export default function NoticeDetailPage({ params }: NoticeDetailProps) {
+  const { notify, confirm } = useFeedback();
   const { id } = use(params);
   const router = useRouter();
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -110,7 +112,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editForm.title.trim() || !editForm.content.trim()) {
-      return alert("제목과 내용을 입력해 주세요.");
+      return notify("제목과 내용을 입력해 주세요.", "info");
     }
     setSaving(true);
     try {
@@ -124,7 +126,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
       setNotice(data.notice);
       setIsEditing(false);
     } catch (err) {
-      alert("공지 수정에 실패했습니다: " + (err as Error).message);
+      notify("공지 수정에 실패했습니다: " + (err as Error).message, "error");
     } finally {
       setSaving(false);
     }
@@ -132,14 +134,14 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
 
   // 삭제 (DELETE /api/notices/[id])
   const handleDelete = async () => {
-    if (!confirm("이 공지를 삭제하시겠습니까?")) return;
+    if (!(await confirm("이 공지를 삭제하시겠습니까?", { danger: true, confirmText: "삭제" }))) return;
     try {
       const res = await fetch(`/api/notices/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error((await res.json()).error ?? "삭제 실패");
-      alert("공지가 삭제되었습니다.");
+      notify("공지가 삭제되었습니다.", "success");
       router.push("/notices");
     } catch (err) {
-      alert("공지 삭제에 실패했습니다: " + (err as Error).message);
+      notify("공지 삭제에 실패했습니다: " + (err as Error).message, "error");
     }
   };
 

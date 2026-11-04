@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/feedback/FeedbackProvider";
 import "../minutes.css";
 import { use, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -22,6 +23,7 @@ export default function MinutesDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { notify, confirm } = useFeedback();
   const { id } = use(params);
   const router = useRouter();
   const [minutes, setMinutes] = useState<Minute[]>([]);
@@ -52,7 +54,7 @@ export default function MinutesDetailPage({
   const attachments = minute?.minute_attachments ?? [];
 
   const remove = async () => {
-    if (!minute || !confirm("삭제하시겠습니까? 첨부파일도 함께 삭제됩니다.")) return;
+    if (!minute || !(await confirm("삭제하시겠습니까? 첨부파일도 함께 삭제됩니다.", { danger: true, confirmText: "삭제" }))) return;
     try {
       const res = await fetch(`/api/minutes/${minute.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? res.statusText);
@@ -60,7 +62,7 @@ export default function MinutesDetailPage({
       const fallback = next ?? prev;
       router.replace(fallback ? `/minutes/${fallback.id}` : "/minutes");
     } catch (err) {
-      alert("삭제 실패: " + (err as Error).message);
+      notify("삭제 실패: " + (err as Error).message, "error");
     }
   };
 

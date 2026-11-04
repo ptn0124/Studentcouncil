@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/feedback/FeedbackProvider";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Notice } from "@/types";
@@ -8,6 +9,7 @@ import { CalendarIcon, EyeIcon, PinIcon, SearchIcon, UserIcon } from "@/componen
 export type NoticeListProps = Record<string, never>;
 
 export default function NoticesPage() {
+  const { notify } = useFeedback();
   const [notices, setNotices] = useState<Notice[]>([]);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -58,7 +60,7 @@ export default function NoticesPage() {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim() || !form.content.trim()) {
-      return alert("제목과 내용을 입력해 주세요.");
+      return notify("제목과 내용을 입력해 주세요.", "info");
     }
     setSubmitting(true);
     try {
@@ -72,7 +74,7 @@ export default function NoticesPage() {
       setShowForm(false);
       fetchNotices();
     } catch (err) {
-      alert("공지 등록에 실패했습니다: " + (err as Error).message);
+      notify("공지 등록에 실패했습니다: " + (err as Error).message, "error");
     } finally {
       setSubmitting(false);
     }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/feedback/FeedbackProvider";
 import "./minutes.css";
 import "react-calendar/dist/Calendar.css"; //캘린더 표시 위해서 라이브러리 사용.
 import { useEffect, useId, useMemo, useState } from "react";
@@ -35,6 +36,7 @@ const byDateAsc = (a: Minute, b: Minute) =>
 const attachmentsOf = (m: Minute) => m.minute_attachments ?? [];
 
 export default function MinutesPage() {
+  const { notify, confirm } = useFeedback();
   const [minutes, setMinutes] = useState<Minute[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<Date | null>(null);
@@ -166,7 +168,7 @@ export default function MinutesPage() {
       setNewFiles([]);
       return true;
     } catch (err) {
-      alert("회의록은 저장되었지만 첨부파일 업로드에 실패했습니다.\n" + (err as Error).message);
+      notify("회의록은 저장되었지만 첨부파일 업로드에 실패했습니다.\n" + (err as Error).message, "error");
       return false;
     }
   };
@@ -200,26 +202,26 @@ export default function MinutesPage() {
         selectMinute(updated);
       }
     } catch (err) {
-      alert("수정 실패: " + (err as Error).message);
+      notify("수정 실패: " + (err as Error).message, "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const remove = async (id: string) => {
-    if (!confirm("삭제하시겠습니까? 첨부파일도 함께 삭제됩니다.")) return;
+    if (!(await confirm("삭제하시겠습니까? 첨부파일도 함께 삭제됩니다.", { danger: true, confirmText: "삭제" }))) return;
     try {
       const res = await fetch(`/api/minutes/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? res.statusText);
       setMinutes((prev) => prev.filter((m) => m.id !== id));
       if (activeId === id) setActiveId(null);
     } catch (err) {
-      alert("삭제 실패: " + (err as Error).message);
+      notify("삭제 실패: " + (err as Error).message, "error");
     }
   };
 
   const removeAttachment = async (minuteId: string, attachment: MinuteAttachment) => {
-    if (!confirm(`"${attachment.file_name}" 파일을 삭제하시겠습니까?`)) return;
+    if (!(await confirm(`"${attachment.file_name}" 파일을 삭제하시겠습니까?`, { danger: true, confirmText: "삭제" }))) return;
     setDeletingAttachmentId(attachment.id);
     try {
       const res = await fetch(`/api/minutes/${minuteId}/attachments/${attachment.id}`, {
@@ -234,7 +236,7 @@ export default function MinutesPage() {
         )
       );
     } catch (err) {
-      alert("첨부파일 삭제 실패: " + (err as Error).message);
+      notify("첨부파일 삭제 실패: " + (err as Error).message, "error");
     } finally {
       setDeletingAttachmentId(null);
     }
@@ -262,7 +264,7 @@ export default function MinutesPage() {
       setNewFiles([]);
       selectMinute(created);
     } catch (err) {
-      alert("저장 실패: " + (err as Error).message);
+      notify("저장 실패: " + (err as Error).message, "error");
     } finally {
       setSubmitting(false);
     }

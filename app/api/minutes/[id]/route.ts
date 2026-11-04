@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { MINUTES_BUCKET } from "@/lib/attachments";
-import { getSessionWithRole, isAdminRole } from "@/lib/server/auth";
+import { getSessionWithRole, getVerifiedSession, isAdminRole } from "@/lib/server/auth";
 
 interface Params {
   params: Promise<{ id: string }>;
@@ -16,7 +16,7 @@ export async function GET(req: Request, context: Params) {
 
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await getVerifiedSession(supabase);
   if (!session)
     return NextResponse.json(
       { error: "로그인이 필요합니다." },

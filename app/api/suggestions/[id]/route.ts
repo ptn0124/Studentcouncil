@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getVerifiedSession } from "@/lib/server/auth"
 import { NextResponse } from "next/server";
 import { isSuggestionStatus } from "@/lib/suggestionStatus";
 
@@ -11,7 +12,7 @@ export async function GET(req: Request, context: Params) {
     const { id } = await context.params
     const supabase = await createClient()
 
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session } } = await getVerifiedSession(supabase)
     if (!session) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
     const { data, error } = await supabase
@@ -28,7 +29,7 @@ export async function PATCH(req: Request, context: Params) {
     const { id } = await context.params
     const supabase = await createClient()
 
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session } } = await getVerifiedSession(supabase)
     if (!session) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
     const { data: profile } = await supabase
@@ -64,7 +65,7 @@ export async function DELETE(req: Request, context: Params) {
     const { id } = await context.params
     const supabase = await createClient()
 
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session } } = await getVerifiedSession(supabase)
     if (!session) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
 
     const { data: profile } = await supabase

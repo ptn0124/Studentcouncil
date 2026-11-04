@@ -22,10 +22,12 @@ export async function proxy(req: NextRequest) {
     },
   );
 
+  // getUser(): 쿠키를 그대로 믿지 않고 Supabase Auth 서버에서 토큰을 검증 (만료 시 갱신도 처리)
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const email = session?.user?.email ?? "";
+    data: { user },
+  } = await supabase.auth.getUser();
+  const session = user ? { user } : null;
+  const email = user?.email ?? "";
 
   const { pathname } = req.nextUrl;
   const isPublicPage =

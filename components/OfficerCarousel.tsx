@@ -59,7 +59,7 @@ function OfficerCard({ officer }: { officer: Officer }) {
 /**
  * 임원진 자동 순환 슬라이드 (외부 라이브러리 없이 구현)
  * - 버튼 조작 없이 왼쪽으로 천천히, 끊김 없이 계속 흐른다 (무한 루프)
- * - 마우스를 올려도 멈추지 않는다 (모바일에서 손가락으로 누르고 있는 동안만 멈춤)
+ * - 마우스·터치 등 어떤 조작에도 멈추지 않는다
  * - 화면 폭에 따라 1~4장 노출
  */
 export default function OfficerCarousel({ officers }: { officers: Officer[] }) {
@@ -70,7 +70,6 @@ export default function OfficerCarousel({ officers }: { officers: Officer[] }) {
   );
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const paused = useRef(false);
 
   // 한 바퀴(set) 안에 최소 perView장 이상이 되도록 목록을 반복 → 그 set을 2번 이어 붙여 끊김 없이 순환
   const repeat = Math.max(1, Math.ceil(perView / officers.length));
@@ -91,7 +90,7 @@ export default function OfficerCarousel({ officers }: { officers: Officer[] }) {
       last = now;
       const cardWidth = viewport.clientWidth / perView;
       const setWidth = cardWidth * set.length;
-      if (!paused.current && setWidth > 0) {
+      if (setWidth > 0) {
         offset = (offset + (cardWidth * CARDS_PER_SECOND * dt) / 1000) % setWidth;
         track.style.transform = `translate3d(${-offset}px, 0, 0)`;
       }
@@ -101,16 +100,10 @@ export default function OfficerCarousel({ officers }: { officers: Officer[] }) {
     return () => cancelAnimationFrame(frame);
   }, [perView, set.length]);
 
-  const pause = () => (paused.current = true);
-  const resume = () => (paused.current = false);
-
   return (
     <div
       ref={viewportRef}
       className="relative overflow-hidden py-2"
-      onTouchStart={pause}
-      onTouchEnd={resume}
-      onTouchCancel={resume}
       aria-roledescription="carousel"
       aria-label="학생회 임원진 (자동으로 넘어갑니다)"
     >

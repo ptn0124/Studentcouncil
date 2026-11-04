@@ -1,5 +1,5 @@
 import { getStatusInfo } from "@/lib/suggestionStatus";
-import { parseStudentId } from "@/lib/studentId";
+import { cleanAuthorName, parseStudentId } from "@/lib/studentId";
 import { UserIcon } from "@/components/icons";
 import type { Suggestion } from "@/types";
 
@@ -29,7 +29,7 @@ export function AuthorLabel({ suggestion }: { suggestion: Pick<Suggestion, "auth
   return (
     <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-gray-600 min-w-0">
       <UserIcon className="w-3.5 h-3.5 text-gray-400" />
-      <span className="truncate">{author_name ?? author_email}</span>
+      <span className="truncate">{cleanAuthorName(author_name, author_email) ?? author_email}</span>
       {studentId && (
         <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-neutralBg text-[12px] font-semibold text-secondary/70">
           {studentId}

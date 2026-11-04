@@ -15,7 +15,6 @@ import {
   formatSuggestionDate,
 } from "@/components/suggestions/SuggestionParts";
 
-type StatusFilter = "all" | SuggestionStatus;
 
 export default function SuggestionsPage() {
   const { notify } = useFeedback();
@@ -25,7 +24,7 @@ export default function SuggestionsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasFetchError, setHasFetchError] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [filter, setFilter] = useState<StatusFilter>("all");
+  const [filter, setFilter] = useState<SuggestionStatus>("pending");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   // 1. 건의함 목록 불러오기 (GET /api/suggestions) — state 갱신은 비동기 콜백 안에서
@@ -116,16 +115,15 @@ export default function SuggestionsPage() {
     {},
   );
   const visible =
-    filter === "all" ? suggestions : suggestions.filter((item) => item.status === filter);
+    suggestions.filter((item) => item.status === filter);
 
-  const filterOptions: { value: StatusFilter; label: string; count: number }[] = [
-    { value: "all", label: "전체", count: suggestions.length },
-    ...SUGGESTION_STATUSES.map((s) => ({
+  // 전체 보기는 두지 않고 상태별로만 본다 (기본: 접수됨)
+  const filterOptions: { value: SuggestionStatus; label: string; count: number }[] =
+    SUGGESTION_STATUSES.map((s) => ({
       value: s,
       label: SUGGESTION_STATUS_INFO[s].label,
       count: counts[s] ?? 0,
-    })),
-  ];
+    }));
 
   return (
     <div className="max-w-[1000px] mx-auto px-4 py-8">

@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-const jwt = require('jsonwebtoken');
-const jwtSecret = process.env.JWTSECRET || "jwtrandomHexes1235"
+// (이전 JWT 방식에서 쓰던 jsonwebtoken import는 supabase auth 이전 후 사용되지 않아 제거)
 
 export async function POST(req: Request) {
     const { credential } = await req.json()

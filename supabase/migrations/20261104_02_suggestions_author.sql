@@ -1,4 +1,5 @@
 -- 건의함: 익명 기능 제거 + 작성자 정보 저장 + 처리 상태 (Supabase SQL Editor에서 실행)
+-- 이 파일만 단독으로 실행해도 되고, 여러 번 실행해도 안전합니다.
 
 -- 1) 작성자 정보 컬럼 (작성 시점의 이름/이메일을 함께 저장)
 --    profiles 테이블은 보통 본인 행만 읽을 수 있어서, 다른 학생의 건의 작성자를 join으로 읽지 못한다.
@@ -11,7 +12,13 @@ alter table public.suggestions
 -- 2) 익명 컬럼은 더 이상 사용하지 않음. 기존 데이터 보존을 위해 컬럼은 남기고 기본값만 false로.
 --    (기존 익명 건의는 author_* 가 비어 있어 화면에 '작성자 정보 없음'으로 표시됨)
 --    완전히 없애려면 백업 후: alter table public.suggestions drop column is_anonymous;
-alter table public.suggestions alter column is_anonymous set default false;
+do $$
+begin
+  if exists (select 1 from information_schema.columns
+             where table_schema = 'public' and table_name = 'suggestions' and column_name = 'is_anonymous') then
+    alter table public.suggestions alter column is_anonymous set default false;
+  end if;
+end $$;
 
 -- 3) 처리 상태: 접수됨(pending) / 처리 중(in_progress) / 해결 완료(resolved) / 반려(rejected)
 update public.suggestions set status = 'pending'
@@ -23,7 +30,17 @@ alter table public.suggestions
   check (status in ('pending', 'in_progress', 'resolved', 'rejected'));
 
 -- 4) 권한 (RLS) — 로그인 사용자는 모두 읽기, 본인 이름으로만 작성, 수정/삭제는 관리자
---    ※ is_council_admin() 함수는 20261104_01_minute_attachments.sql 에서 생성됩니다.
+--    관리자 판별 함수 (회의록 SQL 파일과 동일한 정의 — 이 파일만 단독 실행해도 되도록 포함)
+create or replace function public.is_council_admin()
+returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role in ('admin', 'superadmin')
+  );
+$$;
+
 alter table public.suggestions enable row level security;
 
 drop policy if exists "suggestions read (authenticated)" on public.suggestions;

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { SUGGESTION_COLUMNS, isSuggestionStatus } from "@/lib/suggestionStatus";
+import { isSuggestionStatus } from "@/lib/suggestionStatus";
 
 interface Params {
     params: Promise<{ id: string }>
@@ -16,7 +16,7 @@ export async function GET(req: Request, context: Params) {
 
     const { data, error } = await supabase
         .from('suggestions')
-        .select(SUGGESTION_COLUMNS)
+        .select('*') // 컬럼을 나열하지 않아 author_* 컬럼이 없는 DB에서도 동작
         .eq('id', id)
         .single()
     if (error) return NextResponse.json({ error: error.message }, { status: 404 })
@@ -52,7 +52,7 @@ export async function PATCH(req: Request, context: Params) {
             updated_at: new Date().toISOString()
         })
         .eq('id', id)
-        .select(SUGGESTION_COLUMNS)
+        .select('*') // 컬럼을 나열하지 않아 author_* 컬럼이 없는 DB에서도 동작
         .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

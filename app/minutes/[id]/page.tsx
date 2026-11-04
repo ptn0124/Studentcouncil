@@ -8,7 +8,7 @@ export default async function MinutesDetailPage({
   const { id } = await params;
 
   return (
-    <div className="page">
+    <div className="minutes-page">
       <div className="container">
         <div className="detail-card">
           <h1 className="title">2026년 {id}번 회의록</h1>

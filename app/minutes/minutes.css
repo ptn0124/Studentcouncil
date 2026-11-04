@@ -1,3 +1,4 @@
+/* 회의록 페이지 전용 스타일 — 모든 선택자를 .minutes-page 아래로 한정합니다. 폰트는 globals.css에서 전역 지정. */
 /* ===== tokens ===== */
 :root {
   --ink:            oklch(0.22 0.012 60);
@@ -32,65 +33,63 @@
 }
 
 /* ===== base ===== */
-.page {
+.minutes-page {
   min-height: 100vh;
   background: #faf8f5;
   color: var(--ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   display: flex;
   align-items: flex-start;
   -webkit-font-smoothing: antialiased;
 }
 
-.container {
+.minutes-page .container {
   width: 720px;
   padding: 40px 20px;
 }
 
-.container.wide {
+.minutes-page .container.wide {
   width: 1400px;
   max-width: 100%;
 }
 
 /* ===== header ===== */
-.header {
+.minutes-page .header {
   margin-bottom: 28px;
 }
-.header h1 {
+.minutes-page .header h1 {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-.header p {
+.minutes-page .header p {
   font-size: 13px;
   color: var(--ink-3);
   margin-top: 6px;
 }
 
 /* ===== split layout ===== */
-.split {
+.minutes-page .split {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
   align-items: stretch;
   min-height: 720px;
 }
-.split > .left,
-.split > .right {
+.minutes-page .split > .left,
+.minutes-page .split > .right {
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 @media (max-width: 1000px) {
-  .split {
+  .minutes-page .split {
     grid-template-columns: 1fr;
     min-height: 0;
   }
 }
 
 /* ===== calendar ===== */
-.calendar-wrap {
+.minutes-page .calendar-wrap {
   flex: 1;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -100,7 +99,7 @@
   display: flex;
   box-shadow: var(--shadow-1);
 }
-.calendar-wrap .react-calendar {
+.minutes-page .calendar-wrap .react-calendar {
   width: 100%;
   border: none;
   font-family: inherit;
@@ -109,42 +108,42 @@
   flex-direction: column;
   background: transparent;
 }
-.split .react-calendar__viewContainer,
-.split .react-calendar__month-view,
-.split .react-calendar__month-view > div,
-.split .react-calendar__month-view > div > div {
+.minutes-page .split .react-calendar__viewContainer,
+.minutes-page .split .react-calendar__month-view,
+.minutes-page .split .react-calendar__month-view > div,
+.minutes-page .split .react-calendar__month-view > div > div {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-.split .react-calendar__month-view__days {
+.minutes-page .split .react-calendar__month-view__days {
   flex: 1;
   border-top: 1px solid var(--border-strong);
   border-left: 1px solid var(--border-strong);
 }
 
-.split .react-calendar__navigation button {
+.minutes-page .split .react-calendar__navigation button {
   color: var(--ink);
   font-weight: 500;
   border-radius: 8px;
 }
-.split .react-calendar__navigation button:enabled:hover,
-.split .react-calendar__navigation button:enabled:focus {
+.minutes-page .split .react-calendar__navigation button:enabled:hover,
+.minutes-page .split .react-calendar__navigation button:enabled:focus {
   background: var(--surface-2);
 }
 
-.split .react-calendar__month-view__weekdays {
+.minutes-page .split .react-calendar__month-view__weekdays {
   font-size: 11px;
   color: var(--ink-3);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.split .react-calendar__month-view__weekdays abbr {
+.minutes-page .split .react-calendar__month-view__weekdays abbr {
   text-decoration: none;
   font-weight: 500;
 }
 
-.split .react-calendar__tile {
+.minutes-page .split .react-calendar__tile {
   min-height: 96px;
   vertical-align: top;
   padding: 8px 8px 6px;
@@ -161,30 +160,30 @@
     inset 0 -1px 0 var(--border-strong);
   border-radius: 0;
 }
-.split .react-calendar__month-view__days__day--neighboringMonth {
+.minutes-page .split .react-calendar__month-view__days__day--neighboringMonth {
   background: var(--surface-2);
   box-shadow:
     inset -1px 0 0 var(--border),
     inset 0 -1px 0 var(--border);
 }
-.split .react-calendar__tile:enabled:hover {
+.minutes-page .split .react-calendar__tile:enabled:hover {
   background: var(--surface-2);
 }
 
-.split .react-calendar__tile abbr {
+.minutes-page .split .react-calendar__tile abbr {
   font-size: 12px;
   font-weight: 600;
   align-self: flex-start;
   color: var(--ink-2);
 }
 
-.split .react-calendar__month-view__days__day--neighboringMonth abbr {
+.minutes-page .split .react-calendar__month-view__days__day--neighboringMonth abbr {
   color: var(--ink-4);
 }
 
-.split .react-calendar__tile--now,
-.split .react-calendar__tile--now:enabled:hover,
-.split .react-calendar__tile--now:enabled:focus {
+.minutes-page .split .react-calendar__tile--now,
+.minutes-page .split .react-calendar__tile--now:enabled:hover,
+.minutes-page .split .react-calendar__tile--now:enabled:focus {
   background: var(--surface-2);
   color: inherit;
   box-shadow:
@@ -192,13 +191,13 @@
     inset 0 -1px 0 var(--border),
     inset 0 0 0 1.5px var(--ink);
 }
-.split .react-calendar__tile--now abbr {
+.minutes-page .split .react-calendar__tile--now abbr {
   color: var(--ink);
 }
 
-.split .react-calendar__tile--active,
-.split .react-calendar__tile--active:enabled:hover,
-.split .react-calendar__tile--active:enabled:focus {
+.minutes-page .split .react-calendar__tile--active,
+.minutes-page .split .react-calendar__tile--active:enabled:hover,
+.minutes-page .split .react-calendar__tile--active:enabled:focus {
   background: var(--accent-tint);
   color: var(--ink);
   box-shadow:
@@ -206,11 +205,11 @@
     inset 0 -1px 0 var(--border),
     inset 0 0 0 2px var(--accent);
 }
-.split .react-calendar__tile--active abbr {
+.minutes-page .split .react-calendar__tile--active abbr {
   color: var(--accent-strong);
   font-weight: 700;
 }
-.split .react-calendar__tile--now.react-calendar__tile--active {
+.minutes-page .split .react-calendar__tile--now.react-calendar__tile--active {
   background: var(--accent-tint);
   color: var(--ink);
   box-shadow:
@@ -220,13 +219,13 @@
 }
 
 /* tile events */
-.tile-events {
+.minutes-page .tile-events {
   margin-top: 6px;
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
-.tile-event {
+.minutes-page .tile-event {
   font-size: 11px;
   background: var(--accent-tint);
   color: var(--accent-strong);
@@ -239,13 +238,13 @@
   text-align: left;
   font-weight: 500;
 }
-.react-calendar__tile--active .tile-event {
+.minutes-page .react-calendar__tile--active .tile-event {
   background: var(--accent);
   color: #ffffff;
 }
 
 /* ===== day list under calendar ===== */
-.day-list {
+.minutes-page .day-list {
   margin-top: 12px;
   display: flex;
   flex-direction: column;
@@ -253,7 +252,7 @@
 }
 
 /* ===== card ===== */
-.card {
+.minutes-page .card {
   display: block;
   padding: 14px 16px;
   background: #f3963364;
@@ -266,23 +265,23 @@
               box-shadow 0.15s, border-color 0.15s;
   cursor: pointer;
 }
-.card:hover {
+.minutes-page .card:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.656);
 }
 
 /* 카드 내용 */
-.title {
+.minutes-page .title {
   font-weight: 600;
   font-size: 16px;
   letter-spacing: -0.005em;
 }
-.date {
+.minutes-page .date {
   font-size: 12px;
   color: var(--ink-3);
   margin-top: 4px;
 }
-.summary {
+.minutes-page .summary {
   font-size: 13px;
   color: var(--ink-2);
   margin-top: 6px;
@@ -290,33 +289,33 @@
 }
 
 /* 상세 */
-.detail-card {
+.minutes-page .detail-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 28px;
   box-shadow: var(--shadow-1);
 }
-.detail-card .title {
+.minutes-page .detail-card .title {
   font-size: 20px;
   line-height: 1.3;
 }
-.meta {
+.minutes-page .meta {
   font-size: 12px;
   color: var(--ink-3);
   margin: 6px 0 20px;
   letter-spacing: 0.02em;
 }
-.content {
+.minutes-page .content {
   font-size: 14px;
   line-height: 1.7;
   color: var(--ink);
   flex: 1;
 }
-.content p { margin: 0 0 8px; }
+.minutes-page .content p { margin: 0 0 8px; }
 
 /* ===== buttons ===== */
-.button {
+.minutes-page .button {
   margin-top: 20px;
   padding: 10px 16px;
   background: var(--ink);
@@ -329,46 +328,46 @@
   font-size: 14px;
   transition: background 0.12s, border-color 0.12s, transform 0.06s;
 }
-.button:hover { background: oklch(0.30 0.014 60); }
-.button:active { transform: translateY(1px); }
-.button:focus-visible {
+.minutes-page .button:hover { background: oklch(0.30 0.014 60); }
+.minutes-page .button:active { transform: translateY(1px); }
+.minutes-page .button:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
-.button.primary {
+.minutes-page .button.primary {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--accent-ink);
 }
-.button.primary:hover {
+.minutes-page .button.primary:hover {
   background: var(--accent-strong);
   border-color: var(--accent-strong);
 }
 
-.button.ghost {
+.minutes-page .button.ghost {
   background: transparent;
   color: var(--ink);
   border: 1px solid var(--border-strong);
 }
-.button.ghost:hover { background: var(--surface-2); }
+.minutes-page .button.ghost:hover { background: var(--surface-2); }
 
-.button.sm {
+.minutes-page .button.sm {
   padding: 8px 12px;
   font-size: 12px;
   margin-top: 0;
   min-height: 36px;
 }
 
-.row {
+.minutes-page .row {
   display: flex;
   gap: 8px;
   align-items: center;
 }
-.row.between { justify-content: space-between; }
+.minutes-page .row.between { justify-content: space-between; }
 
 /* ===== form ===== */
-.form-card {
+.minutes-page .form-card {
   position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -380,7 +379,7 @@
   flex-direction: column;
   overflow: hidden;
 }
-.form-card::before {
+.minutes-page .form-card::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
@@ -388,7 +387,7 @@
   background: var(--accent);
 }
 
-.form-title {
+.minutes-page .form-title {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -399,7 +398,7 @@
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
 }
-.form-title .badge {
+.minutes-page .form-title .badge {
   font-size: 11px;
   font-weight: 600;
   padding: 4px 10px;
@@ -410,19 +409,19 @@
   margin-left: auto;
 }
 
-.form {
+.minutes-page .form {
   display: flex;
   flex-direction: column;
   gap: 18px;
   margin: 20px 0 4px;
   flex: 1;
 }
-.field {
+.minutes-page .field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.field-label {
+.minutes-page .field-label {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -432,13 +431,13 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.field-label .req {
+.minutes-page .field-label .req {
   color: var(--accent);
   font-weight: 700;
   font-size: 13px;
   line-height: 1;
 }
-.field-hint {
+.minutes-page .field-hint {
   font-size: 11px;
   color: var(--ink-3);
   font-weight: 400;
@@ -447,7 +446,7 @@
   margin-left: auto;
 }
 
-.input {
+.minutes-page .input {
   width: 100%;
   padding: 11px 14px;
   border: 1px solid var(--border);
@@ -459,25 +458,25 @@
   box-sizing: border-box;
   transition: border-color 0.14s, box-shadow 0.14s, background 0.14s;
 }
-.input::placeholder { color: var(--ink-4); }
-.input:hover {
+.minutes-page .input::placeholder { color: var(--ink-4); }
+.minutes-page .input:hover {
   border-color: var(--border-strong);
   background: oklch(0.995 0.003 80);
 }
-.input:focus {
+.minutes-page .input:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--focus-ring);
   background: var(--surface);
 }
-.textarea {
+.minutes-page .textarea {
   resize: vertical;
   font-family: inherit;
   line-height: 1.65;
   min-height: 160px;
 }
 
-.form-actions {
+.minutes-page .form-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
@@ -485,18 +484,18 @@
   padding-top: 20px;
   border-top: 1px solid var(--border);
 }
-.form-actions .button {
+.minutes-page .form-actions .button {
   margin-top: 0;
   min-width: 88px;
   justify-content: center;
 }
-.button:disabled {
+.minutes-page .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* ===== empty state ===== */
-.empty {
+.minutes-page .empty {
   text-align: center;
   padding: 24px;
   color: var(--ink-3);
@@ -505,14 +504,14 @@
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-lg);
 }
-.empty.tall {
+.minutes-page .empty.tall {
   padding: 60px 24px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 16px;
 }
-.empty .icon {
+.minutes-page .empty .icon {
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -526,5 +525,5 @@
 
 /* prefer-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
+  .minutes-page * { transition: none !important; }
 }

@@ -141,7 +141,7 @@ export default function MinutesPage() {
   };
 
   return (
-    <div className="page">
+    <div className="minutes-page">
       <div className="container wide">
         <div className="header">
           <h1>회의록</h1>

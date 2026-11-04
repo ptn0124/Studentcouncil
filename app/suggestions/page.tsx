@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/feedback/FeedbackProvider";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import type { Suggestion } from "@/types";
@@ -17,6 +18,7 @@ import {
 type StatusFilter = "all" | SuggestionStatus;
 
 export default function SuggestionsPage() {
+  const { notify } = useFeedback();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +62,7 @@ export default function SuggestionsPage() {
     e.preventDefault();
 
     if (!content.trim()) {
-      return alert("건의 내용을 입력해 주세요.");
+      return notify("건의 내용을 입력해 주세요.", "info");
     }
 
     setIsSubmitting(true);
@@ -75,15 +77,16 @@ export default function SuggestionsPage() {
       });
 
       if (response.ok) {
-        alert("건의글이 성공적으로 등록되었습니다.");
+        notify("건의글이 성공적으로 등록되었습니다.", "success");
         setContent("");
         fetchSuggestions(); // 제출 완료 후 목록 새로고침
       } else {
-        alert("건의글 등록에 실패했습니다.");
+        const detail = (await response.json().catch(() => ({}))).error;
+        notify(`건의글 등록에 실패했습니다.${detail ? `\n(${detail})` : ""}`, "error");
       }
     } catch (error) {
       console.error("제출 에러:", error);
-      alert("서버와 통신 중 에러가 발생했습니다.");
+      notify("서버와 통신 중 에러가 발생했습니다.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -102,7 +105,7 @@ export default function SuggestionsPage() {
       const { suggestion } = await res.json();
       setSuggestions((prev) => prev.map((s) => (s.id === id ? { ...s, ...suggestion } : s)));
     } catch (err) {
-      alert("상태 변경에 실패했습니다: " + (err as Error).message);
+      notify("상태 변경에 실패했습니다: " + (err as Error).message, "error");
     } finally {
       setUpdatingId(null);
     }

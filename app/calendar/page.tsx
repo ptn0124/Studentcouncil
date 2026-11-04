@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeedback } from "@/components/feedback/FeedbackProvider";
 import React, { useState, useEffect } from "react";
 
 interface CalendarEvent {
@@ -12,6 +13,7 @@ interface CalendarEvent {
 }
 
 export default function CalendarPage() {
+  const { notify, confirm } = useFeedback();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +86,7 @@ export default function CalendarPage() {
 
     // 🔒 관리자가 아닌 경우 안내 후 종료
     if (!isAdmin) {
-      alert("일정 등록 및 수정은 관리자만 가능합니다.");
+      notify("일정 등록 및 수정은 관리자만 가능합니다.", "info");
       return;
     }
 
@@ -100,11 +102,11 @@ export default function CalendarPage() {
   // 2-b. 일정 막대 클릭 → 클릭한 그 일정(id)만 수정
   const handleEventClick = (evt: CalendarEvent, dateStr: string) => {
     if (!isAdmin) {
-      alert("일정 등록 및 수정은 관리자만 가능합니다.");
+      notify("일정 등록 및 수정은 관리자만 가능합니다.", "info");
       return;
     }
     if (evt.source === "neis" || evt.id.startsWith("neis-")) {
-      alert(`[나이스 공식 일정] ${evt.title}\n\n공식 학사일정은 수정·삭제할 수 없습니다.`);
+      notify(`[나이스 공식 일정] ${evt.title}\n\n공식 학사일정은 수정·삭제할 수 없습니다.`, "info");
       return;
     }
 
@@ -122,7 +124,7 @@ export default function CalendarPage() {
     e.preventDefault();
 
     if (!formTitle.trim()) {
-      return alert("일정 제목을 입력해 주세요.");
+      return notify("일정 제목을 입력해 주세요.", "info");
     }
 
     setIsSubmitting(true);
@@ -153,15 +155,15 @@ export default function CalendarPage() {
       }
 
       if (response.ok) {
-        alert(editingEventId ? "일정이 수정되었습니다." : "일정이 등록되었습니다.");
+        notify(editingEventId ? "일정이 수정되었습니다." : "일정이 등록되었습니다.", "success");
         setIsModalOpen(false);
         fetchEvents(); // 목록 새로고침
       } else {
-        alert("처리에 실패했습니다. (권한을 확인해 주세요)");
+        notify("처리에 실패했습니다. (권한을 확인해 주세요)", "error");
       }
     } catch (error) {
       console.error("일정 저장 에러:", error);
-      alert("서버 통신 중 에러가 발생했습니다.");
+      notify("서버 통신 중 에러가 발생했습니다.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -170,7 +172,7 @@ export default function CalendarPage() {
   // 4. 일정 삭제
   const handleDeleteEvent = async () => {
     if (!editingEventId) return;
-    if (!confirm("정말 이 일정을 삭제하시겠습니까?")) return;
+    if (!(await confirm("정말 이 일정을 삭제하시겠습니까?", { danger: true, confirmText: "삭제" }))) return;
 
     setIsSubmitting(true);
     try {
@@ -179,11 +181,11 @@ export default function CalendarPage() {
       });
 
       if (response.ok) {
-        alert("일정이 삭제되었습니다.");
+        notify("일정이 삭제되었습니다.", "success");
         setIsModalOpen(false);
         fetchEvents();
       } else {
-        alert("삭제에 실패했습니다.");
+        notify("삭제에 실패했습니다.", "error");
       }
     } catch (error) {
       console.error("삭제 에러:", error);
@@ -198,11 +200,9 @@ export default function CalendarPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-[28px] font-bold text-secondary">학사 일정 캘린더</h1>
-          <p className="text-gray-600 text-[14px]">
-            {isAdmin
-              ? "💡 날짜의 빈 곳을 클릭하면 새 일정을 등록하고, 일정을 클릭하면 그 일정을 수정할 수 있습니다."
-              : "학교의 주요 학사 일정을 확인하세요."}
-          </p>
+          {!isAdmin && (
+            <p className="text-gray-600 text-[14px]">학교의 주요 학사 일정을 확인하세요.</p>
+          )}
         </div>
       </div>
 

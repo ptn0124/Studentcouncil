@@ -3,6 +3,15 @@ import { getContactInfo, getCouncilTerm } from "@/lib/config";
 
 export type FooterProps = Record<string, never>;
 
+/**
+ * 학생회 연락처 — 여기에 직접 입력하세요.
+ * (Supabase app_config 테이블에 contact_email / contact_phone 값이 있으면 그 값이 우선합니다.)
+ */
+const CONTACT = {
+  email: "", // 예: "council@g.cnees.kr"
+  phone: "", // 예: "041-000-0000"
+};
+
 const QUICK_LINKS = [
   { name: "공지사항", href: "/notices" },
   { name: "회의록 공개", href: "/minutes" },
@@ -11,8 +20,9 @@ const QUICK_LINKS = [
 ];
 
 export default async function Footer() {
-  const [councilTerm, contact] = await Promise.all([getCouncilTerm(), getContactInfo()]);
-  const hasContact = Boolean(contact.email || contact.phone);
+  const [councilTerm, config] = await Promise.all([getCouncilTerm(), getContactInfo()]);
+  const email = config.email ?? (CONTACT.email.trim() || null);
+  const phone = config.phone ?? (CONTACT.phone.trim() || null);
 
   return (
     <footer className="w-full bg-[#2c3e50] text-[#faf8f5] mt-auto">
@@ -42,37 +52,36 @@ export default async function Footer() {
             </ul>
           </nav>
 
-          {/* 연락처 — app_config(contact_email, contact_phone)에 값이 있을 때만 표시 */}
+          {/* 연락처 — 위 CONTACT 상수 또는 app_config(contact_email, contact_phone) */}
           <div className="space-y-3">
-            <h3 className="text-[16px] font-semibold text-[#f39733]">문의</h3>
+            <h3 className="text-[16px] font-semibold text-[#f39733]">연락처</h3>
             <ul className="space-y-2 text-[14px] text-[#faf8f5]/70">
-              {contact.email && (
-                <li className="flex items-center gap-2 min-w-0">
-                  <svg className="w-4 h-4 shrink-0 text-[#faf8f5]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <a href={`mailto:${contact.email}`} className="hover:text-[#f39733] transition-colors duration-200 break-all">
-                    {contact.email}
+              <li className="flex items-center gap-2 min-w-0">
+                <svg className="w-4 h-4 shrink-0 text-[#faf8f5]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span className="shrink-0 text-[#faf8f5]/50">이메일</span>
+                {email ? (
+                  <a href={`mailto:${email}`} className="hover:text-[#f39733] transition-colors duration-200 break-all">
+                    {email}
                   </a>
-                </li>
-              )}
-              {contact.phone && (
-                <li className="flex items-center gap-2">
-                  <svg className="w-4 h-4 shrink-0 text-[#faf8f5]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  <a href={`tel:${contact.phone}`} className="hover:text-[#f39733] transition-colors duration-200">
-                    {contact.phone}
+                ) : (
+                  <span className="text-[#faf8f5]/40">추후 안내 예정</span>
+                )}
+              </li>
+              <li className="flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0 text-[#faf8f5]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <span className="shrink-0 text-[#faf8f5]/50">전화</span>
+                {phone ? (
+                  <a href={`tel:${phone}`} className="hover:text-[#f39733] transition-colors duration-200">
+                    {phone}
                   </a>
-                </li>
-              )}
-              {!hasContact && (
-                <li>
-                  <Link href="/suggestions" className="hover:text-[#f39733] transition-colors duration-200">
-                    학생 건의함으로 문의해 주세요
-                  </Link>
-                </li>
-              )}
+                ) : (
+                  <span className="text-[#faf8f5]/40">추후 안내 예정</span>
+                )}
+              </li>
             </ul>
           </div>
         </div>

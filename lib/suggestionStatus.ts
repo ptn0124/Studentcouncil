@@ -17,6 +17,3 @@ export function getStatusInfo(status: string | null | undefined) {
   return isSuggestionStatus(status) ? SUGGESTION_STATUS_INFO[status] : SUGGESTION_STATUS_INFO.pending;
 }
 
-/** API에서 조회하는 컬럼 (is_anonymous 등 더 이상 쓰지 않는 컬럼 제외) */
-export const SUGGESTION_COLUMNS =
-  "id, content, status, reply, author_id, author_name, author_email, created_at, updated_at";

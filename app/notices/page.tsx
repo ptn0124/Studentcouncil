@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Notice } from "@/types";
+import { CalendarIcon, EyeIcon, PinIcon, SearchIcon, UserIcon } from "@/components/icons";
 
-export interface NoticeListProps {
-  // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
-}
+export type NoticeListProps = Record<string, never>;
 
 export default function NoticesPage() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -22,31 +21,28 @@ export default function NoticesPage() {
 
   // 디바운스 처리 (300ms)
   useEffect(() => {
+    if (search === debouncedSearch) return;
     const handler = setTimeout(() => {
+      setIsLoading(true);
       setDebouncedSearch(search);
     }, 300);
     return () => clearTimeout(handler);
-  }, [search]);
+  }, [search, debouncedSearch]);
 
-  // 공지사항 목록 불러오기
-  const fetchNotices = async () => {
-    setIsLoading(true);
-    try {
-      const url = debouncedSearch
-        ? `/api/notices?search=${encodeURIComponent(debouncedSearch)}`
-        : "/api/notices";
-      const res = await fetch(url);
-      const data = await res.json();
-      setNotices(data.notices || []);
-    } catch (error) {
-      console.error("Failed to fetch notices:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  // 공지사항 목록 불러오기 (state 갱신은 모두 비동기 콜백 안에서 수행)
+  const fetchNotices = (query: string = debouncedSearch) => {
+    const url = query
+      ? `/api/notices?search=${encodeURIComponent(query)}`
+      : "/api/notices";
+    return fetch(url)
+      .then((res) => res.json())
+      .then((data) => setNotices(data.notices || []))
+      .catch((error) => console.error("Failed to fetch notices:", error))
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
-    fetchNotices();
+    fetchNotices(debouncedSearch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
@@ -199,7 +195,7 @@ export default function NoticesPage() {
                     }
                     className="w-4 h-4 accent-[#f39733]"
                   />
-                  <span>📌 중요 공지로 고정</span>
+                  <span className="inline-flex items-center gap-1"><PinIcon className="w-3.5 h-3.5 text-[#f39733]" />중요 공지로 고정</span>
                 </label>
 
                 <div className="flex gap-2">
@@ -235,7 +231,7 @@ export default function NoticesPage() {
         </div>
       ) : notices.length === 0 ? (
         <div className="text-center py-20 bg-white/50 backdrop-blur-sm rounded-2xl border border-[#2c3e50]/5">
-          <p className="text-[24px] mb-3">🔍</p>
+          <SearchIcon className="w-8 h-8 mx-auto mb-3 text-[#2c3e50]/30" />
           <p className="text-[16px] text-[#2c3e50]/60 font-medium">검색 결과가 없습니다.</p>
           <p className="text-[14px] text-[#2c3e50]/40 mt-1">다른 검색어를 입력해 보세요.</p>
         </div>
@@ -254,30 +250,29 @@ export default function NoticesPage() {
                 {/* 중요 핀 표식 */}
                 {notice.is_pinned && (
                   <div className="absolute right-0 top-0 bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-3.5 py-1.5 rounded-bl-xl flex items-center gap-1 shadow-sm">
-                    📌 <span>중요</span>
+                    <PinIcon className="w-3.5 h-3.5" /> <span>중요</span>
                   </div>
                 )}
 
                 <div className="space-y-3">
                   {/* 제목 H2: 20px */}
-                  <h2 className={`text-[20px] font-bold text-[#2c3e50] group-hover:text-[#f39733] transition-colors duration-300 pr-16 leading-snug`}>
+                  <h2 className={`text-[18px] sm:text-[20px] font-bold text-[#2c3e50] group-hover:text-[#f39733] transition-colors duration-300 leading-snug break-words [overflow-wrap:anywhere] ${notice.is_pinned ? "pr-16" : ""}`}>
                     {notice.title}
                   </h2>
 
-                  {/* 본문 미리보기 (일부만) body: 16px */}
-                  <p className="text-[16px] text-[#2c3e50]/70 line-clamp-2 leading-relaxed">
-                    {notice.content}
-                  </p>
-
                   {/* 메타정보 (캡션) caption: 14px */}
-                  <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50 pt-2">
-                    <span className="flex items-center gap-1 font-medium text-[#2c3e50]/60">
-                      👤 학생회
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-[#2c3e50]/50">
+                    <span className="inline-flex items-center gap-1.5 font-medium text-[#2c3e50]/60">
+                      <UserIcon /> 학생회
                     </span>
-                    <span>•</span>
-                    <span>📅 {formatDate(notice.created_at)}</span>
-                    <span>•</span>
-                    <span>👀 조회수 {notice.view_count}</span>
+                    <span aria-hidden="true" className="hidden sm:inline">•</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <CalendarIcon /> {formatDate(notice.created_at)}
+                    </span>
+                    <span aria-hidden="true" className="hidden sm:inline">•</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <EyeIcon /> 조회수 {notice.view_count}
+                    </span>
                   </div>
                 </div>
               </Link>

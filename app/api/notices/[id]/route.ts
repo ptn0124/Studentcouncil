@@ -9,8 +9,7 @@ export async function GET(req: Request, context: Params) {
     const { id } = await context.params
     const supabase = await createClient()
 
-    await supabase.rpc('increment_view_count', { notice_id: id })
-
+    // 조회수 증가는 POST /api/notices/[id]/view 에서 처리 (GET은 부작용 없이 조회만)
     const { data, error } = await supabase
         .from('notices')
         .select('*')

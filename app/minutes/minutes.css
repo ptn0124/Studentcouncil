@@ -1,3 +1,4 @@
+/* 회의록 페이지 전용 스타일 — 모든 선택자를 .minutes-page 아래로 한정합니다. 폰트는 globals.css에서 전역 지정. */
 /* ===== tokens ===== */
 :root {
   --ink:            oklch(0.22 0.012 60);
@@ -32,65 +33,63 @@
 }
 
 /* ===== base ===== */
-.page {
+.minutes-page {
   min-height: 100vh;
   background: #faf8f5;
   color: var(--ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   display: flex;
   align-items: flex-start;
   -webkit-font-smoothing: antialiased;
 }
 
-.container {
+.minutes-page .container {
   width: 720px;
   padding: 40px 20px;
 }
 
-.container.wide {
+.minutes-page .container.wide {
   width: 1400px;
   max-width: 100%;
 }
 
 /* ===== header ===== */
-.header {
+.minutes-page .header {
   margin-bottom: 28px;
 }
-.header h1 {
+.minutes-page .header h1 {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-.header p {
+.minutes-page .header p {
   font-size: 13px;
   color: var(--ink-3);
   margin-top: 6px;
 }
 
 /* ===== split layout ===== */
-.split {
+.minutes-page .split {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
   align-items: stretch;
   min-height: 720px;
 }
-.split > .left,
-.split > .right {
+.minutes-page .split > .left,
+.minutes-page .split > .right {
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 @media (max-width: 1000px) {
-  .split {
+  .minutes-page .split {
     grid-template-columns: 1fr;
     min-height: 0;
   }
 }
 
 /* ===== calendar ===== */
-.calendar-wrap {
+.minutes-page .calendar-wrap {
   flex: 1;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -100,7 +99,7 @@
   display: flex;
   box-shadow: var(--shadow-1);
 }
-.calendar-wrap .react-calendar {
+.minutes-page .calendar-wrap .react-calendar {
   width: 100%;
   border: none;
   font-family: inherit;
@@ -109,42 +108,42 @@
   flex-direction: column;
   background: transparent;
 }
-.split .react-calendar__viewContainer,
-.split .react-calendar__month-view,
-.split .react-calendar__month-view > div,
-.split .react-calendar__month-view > div > div {
+.minutes-page .split .react-calendar__viewContainer,
+.minutes-page .split .react-calendar__month-view,
+.minutes-page .split .react-calendar__month-view > div,
+.minutes-page .split .react-calendar__month-view > div > div {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-.split .react-calendar__month-view__days {
+.minutes-page .split .react-calendar__month-view__days {
   flex: 1;
   border-top: 1px solid var(--border-strong);
   border-left: 1px solid var(--border-strong);
 }
 
-.split .react-calendar__navigation button {
+.minutes-page .split .react-calendar__navigation button {
   color: var(--ink);
   font-weight: 500;
   border-radius: 8px;
 }
-.split .react-calendar__navigation button:enabled:hover,
-.split .react-calendar__navigation button:enabled:focus {
+.minutes-page .split .react-calendar__navigation button:enabled:hover,
+.minutes-page .split .react-calendar__navigation button:enabled:focus {
   background: var(--surface-2);
 }
 
-.split .react-calendar__month-view__weekdays {
+.minutes-page .split .react-calendar__month-view__weekdays {
   font-size: 11px;
   color: var(--ink-3);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.split .react-calendar__month-view__weekdays abbr {
+.minutes-page .split .react-calendar__month-view__weekdays abbr {
   text-decoration: none;
   font-weight: 500;
 }
 
-.split .react-calendar__tile {
+.minutes-page .split .react-calendar__tile {
   min-height: 96px;
   vertical-align: top;
   padding: 8px 8px 6px;
@@ -161,30 +160,30 @@
     inset 0 -1px 0 var(--border-strong);
   border-radius: 0;
 }
-.split .react-calendar__month-view__days__day--neighboringMonth {
+.minutes-page .split .react-calendar__month-view__days__day--neighboringMonth {
   background: var(--surface-2);
   box-shadow:
     inset -1px 0 0 var(--border),
     inset 0 -1px 0 var(--border);
 }
-.split .react-calendar__tile:enabled:hover {
+.minutes-page .split .react-calendar__tile:enabled:hover {
   background: var(--surface-2);
 }
 
-.split .react-calendar__tile abbr {
+.minutes-page .split .react-calendar__tile abbr {
   font-size: 12px;
   font-weight: 600;
   align-self: flex-start;
   color: var(--ink-2);
 }
 
-.split .react-calendar__month-view__days__day--neighboringMonth abbr {
+.minutes-page .split .react-calendar__month-view__days__day--neighboringMonth abbr {
   color: var(--ink-4);
 }
 
-.split .react-calendar__tile--now,
-.split .react-calendar__tile--now:enabled:hover,
-.split .react-calendar__tile--now:enabled:focus {
+.minutes-page .split .react-calendar__tile--now,
+.minutes-page .split .react-calendar__tile--now:enabled:hover,
+.minutes-page .split .react-calendar__tile--now:enabled:focus {
   background: var(--surface-2);
   color: inherit;
   box-shadow:
@@ -192,13 +191,13 @@
     inset 0 -1px 0 var(--border),
     inset 0 0 0 1.5px var(--ink);
 }
-.split .react-calendar__tile--now abbr {
+.minutes-page .split .react-calendar__tile--now abbr {
   color: var(--ink);
 }
 
-.split .react-calendar__tile--active,
-.split .react-calendar__tile--active:enabled:hover,
-.split .react-calendar__tile--active:enabled:focus {
+.minutes-page .split .react-calendar__tile--active,
+.minutes-page .split .react-calendar__tile--active:enabled:hover,
+.minutes-page .split .react-calendar__tile--active:enabled:focus {
   background: var(--accent-tint);
   color: var(--ink);
   box-shadow:
@@ -206,11 +205,11 @@
     inset 0 -1px 0 var(--border),
     inset 0 0 0 2px var(--accent);
 }
-.split .react-calendar__tile--active abbr {
+.minutes-page .split .react-calendar__tile--active abbr {
   color: var(--accent-strong);
   font-weight: 700;
 }
-.split .react-calendar__tile--now.react-calendar__tile--active {
+.minutes-page .split .react-calendar__tile--now.react-calendar__tile--active {
   background: var(--accent-tint);
   color: var(--ink);
   box-shadow:
@@ -220,13 +219,13 @@
 }
 
 /* tile events */
-.tile-events {
+.minutes-page .tile-events {
   margin-top: 6px;
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
-.tile-event {
+.minutes-page .tile-event {
   font-size: 11px;
   background: var(--accent-tint);
   color: var(--accent-strong);
@@ -239,13 +238,13 @@
   text-align: left;
   font-weight: 500;
 }
-.react-calendar__tile--active .tile-event {
+.minutes-page .react-calendar__tile--active .tile-event {
   background: var(--accent);
   color: #ffffff;
 }
 
 /* ===== day list under calendar ===== */
-.day-list {
+.minutes-page .day-list {
   margin-top: 12px;
   display: flex;
   flex-direction: column;
@@ -253,7 +252,7 @@
 }
 
 /* ===== card ===== */
-.card {
+.minutes-page .card {
   display: block;
   padding: 14px 16px;
   background: #f3963364;
@@ -266,23 +265,23 @@
               box-shadow 0.15s, border-color 0.15s;
   cursor: pointer;
 }
-.card:hover {
+.minutes-page .card:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.656);
 }
 
 /* 카드 내용 */
-.title {
+.minutes-page .title {
   font-weight: 600;
   font-size: 16px;
   letter-spacing: -0.005em;
 }
-.date {
+.minutes-page .date {
   font-size: 12px;
   color: var(--ink-3);
   margin-top: 4px;
 }
-.summary {
+.minutes-page .summary {
   font-size: 13px;
   color: var(--ink-2);
   margin-top: 6px;
@@ -290,33 +289,33 @@
 }
 
 /* 상세 */
-.detail-card {
+.minutes-page .detail-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 28px;
   box-shadow: var(--shadow-1);
 }
-.detail-card .title {
+.minutes-page .detail-card .title {
   font-size: 20px;
   line-height: 1.3;
 }
-.meta {
+.minutes-page .meta {
   font-size: 12px;
   color: var(--ink-3);
   margin: 6px 0 20px;
   letter-spacing: 0.02em;
 }
-.content {
+.minutes-page .content {
   font-size: 14px;
   line-height: 1.7;
   color: var(--ink);
   flex: 1;
 }
-.content p { margin: 0 0 8px; }
+.minutes-page .content p { margin: 0 0 8px; }
 
 /* ===== buttons ===== */
-.button {
+.minutes-page .button {
   margin-top: 20px;
   padding: 10px 16px;
   background: var(--ink);
@@ -329,46 +328,46 @@
   font-size: 14px;
   transition: background 0.12s, border-color 0.12s, transform 0.06s;
 }
-.button:hover { background: oklch(0.30 0.014 60); }
-.button:active { transform: translateY(1px); }
-.button:focus-visible {
+.minutes-page .button:hover { background: oklch(0.30 0.014 60); }
+.minutes-page .button:active { transform: translateY(1px); }
+.minutes-page .button:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
-.button.primary {
+.minutes-page .button.primary {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--accent-ink);
 }
-.button.primary:hover {
+.minutes-page .button.primary:hover {
   background: var(--accent-strong);
   border-color: var(--accent-strong);
 }
 
-.button.ghost {
+.minutes-page .button.ghost {
   background: transparent;
   color: var(--ink);
   border: 1px solid var(--border-strong);
 }
-.button.ghost:hover { background: var(--surface-2); }
+.minutes-page .button.ghost:hover { background: var(--surface-2); }
 
-.button.sm {
+.minutes-page .button.sm {
   padding: 8px 12px;
   font-size: 12px;
   margin-top: 0;
   min-height: 36px;
 }
 
-.row {
+.minutes-page .row {
   display: flex;
   gap: 8px;
   align-items: center;
 }
-.row.between { justify-content: space-between; }
+.minutes-page .row.between { justify-content: space-between; }
 
 /* ===== form ===== */
-.form-card {
+.minutes-page .form-card {
   position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -380,7 +379,7 @@
   flex-direction: column;
   overflow: hidden;
 }
-.form-card::before {
+.minutes-page .form-card::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
@@ -388,7 +387,7 @@
   background: var(--accent);
 }
 
-.form-title {
+.minutes-page .form-title {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -399,7 +398,7 @@
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
 }
-.form-title .badge {
+.minutes-page .form-title .badge {
   font-size: 11px;
   font-weight: 600;
   padding: 4px 10px;
@@ -410,19 +409,19 @@
   margin-left: auto;
 }
 
-.form {
+.minutes-page .form {
   display: flex;
   flex-direction: column;
   gap: 18px;
   margin: 20px 0 4px;
   flex: 1;
 }
-.field {
+.minutes-page .field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.field-label {
+.minutes-page .field-label {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -432,13 +431,13 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.field-label .req {
+.minutes-page .field-label .req {
   color: var(--accent);
   font-weight: 700;
   font-size: 13px;
   line-height: 1;
 }
-.field-hint {
+.minutes-page .field-hint {
   font-size: 11px;
   color: var(--ink-3);
   font-weight: 400;
@@ -447,7 +446,7 @@
   margin-left: auto;
 }
 
-.input {
+.minutes-page .input {
   width: 100%;
   padding: 11px 14px;
   border: 1px solid var(--border);
@@ -459,25 +458,25 @@
   box-sizing: border-box;
   transition: border-color 0.14s, box-shadow 0.14s, background 0.14s;
 }
-.input::placeholder { color: var(--ink-4); }
-.input:hover {
+.minutes-page .input::placeholder { color: var(--ink-4); }
+.minutes-page .input:hover {
   border-color: var(--border-strong);
   background: oklch(0.995 0.003 80);
 }
-.input:focus {
+.minutes-page .input:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--focus-ring);
   background: var(--surface);
 }
-.textarea {
+.minutes-page .textarea {
   resize: vertical;
   font-family: inherit;
   line-height: 1.65;
   min-height: 160px;
 }
 
-.form-actions {
+.minutes-page .form-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
@@ -485,18 +484,18 @@
   padding-top: 20px;
   border-top: 1px solid var(--border);
 }
-.form-actions .button {
+.minutes-page .form-actions .button {
   margin-top: 0;
   min-width: 88px;
   justify-content: center;
 }
-.button:disabled {
+.minutes-page .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* ===== empty state ===== */
-.empty {
+.minutes-page .empty {
   text-align: center;
   padding: 24px;
   color: var(--ink-3);
@@ -505,26 +504,358 @@
   border: 1px dashed var(--border-strong);
   border-radius: var(--radius-lg);
 }
-.empty.tall {
+.minutes-page .empty.tall {
   padding: 60px 24px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 16px;
 }
-.empty .icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--surface-2);
+
+
+/* ===== header with add button ===== */
+.minutes-page .header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.minutes-page .add-button {
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* ===== text helpers ===== */
+.minutes-page .link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-strong);
+  cursor: pointer;
+  text-decoration: none;
+}
+.minutes-page .link-button:hover { text-decoration: underline; }
+.minutes-page .link-button:disabled { color: var(--ink-4); cursor: not-allowed; text-decoration: none; }
+.minutes-page .muted { color: var(--ink-3); }
+.minutes-page .small { font-size: 13px; }
+.minutes-page .button.danger { color: var(--danger); }
+.minutes-page .button.danger:hover { background: oklch(0.97 0.02 25); }
+.minutes-page a.button { display: inline-flex; align-items: center; text-decoration: none; }
+
+/* ===== right panel ===== */
+.minutes-page .right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.minutes-page .panel-toolbar { display: flex; }
+.minutes-page .day-list { margin-top: 0; gap: 6px; }
+.minutes-page .day-label {
+  font-size: 12px;
+  font-weight: 600;
   color: var(--ink-3);
-  display: grid;
-  place-items: center;
+  margin-bottom: 2px;
+}
+.minutes-page .day-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.minutes-page .day-item:hover { background: var(--surface-2); }
+.minutes-page .day-item.active {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  box-shadow: inset 3px 0 0 var(--accent);
+  font-weight: 600;
+}
+.minutes-page .day-item-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.minutes-page .day-item-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--ink-3);
+  flex-shrink: 0;
+}
+
+.minutes-page .detail-head { align-items: flex-start; flex-wrap: wrap; }
+.minutes-page .detail-card-title {
   font-size: 20px;
-  font-weight: 300;
+  font-weight: 700;
+  line-height: 1.35;
+  min-width: 0;
+  flex: 1 1 200px;
+  overflow-wrap: anywhere;
+}
+.minutes-page .detail-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.minutes-page .meta-sep { margin: 0 6px; }
+.minutes-page .meta-link { color: var(--accent-strong); text-decoration: none; font-weight: 600; }
+.minutes-page .meta-link:hover { text-decoration: underline; }
+.minutes-page .content-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ===== attachments ===== */
+.minutes-page .attachments {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.minutes-page .attachments-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin-bottom: 10px;
+}
+.minutes-page .file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.minutes-page .file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-size: 13px;
+  min-width: 0;
+}
+.minutes-page .file-item.pending { background: var(--accent-tint); border-style: dashed; }
+.minutes-page .file-icon { color: var(--ink-3); }
+.minutes-page .file-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.minutes-page .file-link { text-decoration: none; font-weight: 500; }
+.minutes-page .file-link:hover { color: var(--accent-strong); text-decoration: underline; }
+.minutes-page .file-size { font-size: 12px; color: var(--ink-3); flex-shrink: 0; }
+.minutes-page .icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.minutes-page .icon-button:hover { background: var(--surface); color: var(--ink); }
+.minutes-page .icon-button.danger:hover { color: var(--danger); }
+.minutes-page .icon-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.minutes-page .attach-picker { display: flex; flex-direction: column; gap: 8px; }
+.minutes-page .dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 16px;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  text-align: center;
+  transition: border-color 0.12s, background 0.12s;
+}
+.minutes-page .dropzone.over { border-color: var(--accent); background: var(--accent-tint); }
+.minutes-page .dropzone.disabled { opacity: 0.6; }
+.minutes-page .dropzone-icon { color: var(--ink-3); }
+.minutes-page .dropzone-text { font-size: 13px; color: var(--ink-2); }
+.minutes-page .dropzone-hint { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+.minutes-page .attach-errors {
+  margin: 0;
+  padding: 10px 12px 10px 28px;
+  border-radius: var(--radius);
+  background: oklch(0.97 0.02 25);
+  color: var(--danger);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ===== prev / next ===== */
+.minutes-page .pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.minutes-page .pager-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.minutes-page .pager-item.next { text-align: right; align-items: flex-end; }
+.minutes-page .pager-item:hover:not(:disabled):not([aria-disabled="true"]) {
+  border-color: var(--accent-soft);
+  background: var(--accent-tint);
+}
+.minutes-page .pager-item:disabled,
+.minutes-page .pager-item[aria-disabled="true"] { opacity: 0.5; cursor: default; }
+.minutes-page .pager-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.minutes-page .pager-title {
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== list (all minutes) ===== */
+.minutes-page .list-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-1);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.minutes-page .list-head { margin-bottom: 10px; }
+.minutes-page .list-title { font-size: 14px; font-weight: 700; }
+.minutes-page .list-empty { padding: 32px 8px; text-align: center; font-size: 13px; color: var(--ink-3); }
+.minutes-page .minute-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  max-height: 640px;
+}
+.minutes-page .minute-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.minutes-page .minute-row:hover { background: var(--surface-2); }
+.minutes-page .minute-row.active {
+  background: var(--accent-tint);
+  border-color: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.minutes-page .minute-row-title {
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.minutes-page .minute-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+/* ===== detail page layout ===== */
+.minutes-page .breadcrumb {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-bottom: 20px;
+}
+.minutes-page .breadcrumb a { color: inherit; text-decoration: none; }
+.minutes-page .breadcrumb a:hover { color: var(--accent-strong); }
+.minutes-page .detail-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.minutes-page .side-list { position: sticky; top: 88px; }
+.minutes-page .detail-main { min-width: 0; }
+@media (max-width: 860px) {
+  .minutes-page .detail-layout { grid-template-columns: 1fr; }
+  .minutes-page .side-list { position: static; order: 2; }
+  .minutes-page .minute-list { max-height: 320px; }
+}
+@media (max-width: 640px) {
+  .minutes-page .container { padding: 24px 0; }
+  .minutes-page .detail-card { padding: 20px; }
+  .minutes-page .form-card { padding: 22px 18px 18px; }
+  .minutes-page .split .react-calendar__tile { min-height: 64px; padding: 6px 4px 4px; }
+  .minutes-page .tile-event { font-size: 10px; padding: 1px 4px; }
 }
 
 /* prefer-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
+  .minutes-page * { transition: none !important; }
 }

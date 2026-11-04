@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Officer } from "@/types";
+import OfficerCarousel from "@/components/OfficerCarousel";
 
-export interface MainPageProps {
-  // 정의된 props가 있다면 여기에 작성합니다. (현재는 없음)
-}
+export type MainPageProps = Record<string, never>;
 
 export default function Page() {
   const [officers, setOfficers] = useState<Officer[]>([]);
@@ -95,7 +94,7 @@ export default function Page() {
       {/* 임원진 소개 섹션 */}
       <section
         id="officers-section"
-        className="w-full max-w-[1200px] px-4 py-20 space-y-12 border-t border-[#2c3e50]/5 scroll-mt-16"
+        className="w-full max-w-[1200px] px-4 py-16 space-y-10 border-t border-[#2c3e50]/5 scroll-mt-16"
       >
         <div className="text-center space-y-2">
           {/* H2: 20px */}
@@ -108,48 +107,13 @@ export default function Page() {
           </p>
         </div>
 
-        {/* 임원진 카드 그리드 */}
+        {/* 임원진 카드 슬라이드 (자동 순환) */}
         {officers.length === 0 ? (
           <p className="text-center text-[14px] text-[#2c3e50]/40 py-10">
             등록된 임원진 정보가 없습니다.
           </p>
         ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {officers.map((officer) => (
-            <div
-              key={officer.id}
-              className="group bg-white/70 backdrop-blur-md border border-[#2c3e50]/10 rounded-2xl p-6 text-center transition-all duration-300 hover:shadow-xl hover:shadow-[#f39733]/5 hover:border-[#f39733]/30 hover:-translate-y-1"
-            >
-              {/* 프로필 이미지 혹은 이니셜 플레이스홀더 */}
-              <div className="w-24 h-24 mx-auto mb-5 rounded-full overflow-hidden border-2 border-[#2c3e50]/10 group-hover:border-[#f39733]/40 transition-colors duration-300 bg-gradient-to-br from-[#f39733]/15 to-[#2c3e50]/10 flex items-center justify-center text-[28px] font-bold text-[#2c3e50]/80">
-                {officer.image_url ? (
-                  <img
-                    src={officer.image_url}
-                    alt={officer.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  officer.name[0] // 성씨 첫 글자를 플레이스홀더 글자로 사용 (예: "박")
-                )}
-              </div>
-
-              {/* 직책 */}
-              <span className="inline-block text-[14px] font-bold text-[#f39733] bg-[#f39733]/10 px-3 py-1 rounded-full mb-2">
-                {officer.position}
-              </span>
-
-              {/* 이름 */}
-              <h3 className="text-[18px] font-bold text-[#2c3e50] mb-1">
-                {officer.name}
-              </h3>
-
-              {/* 학과 (캡션) caption: 14px */}
-              <p className="text-[14px] text-[#2c3e50]/50">
-                {officer.department || "학과 정보 없음"}
-              </p>
-            </div>
-          ))}
-        </div>
+          <OfficerCarousel officers={officers} />
         )}
       </section>
     </div>

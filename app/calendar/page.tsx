@@ -7,7 +7,8 @@ interface CalendarEvent {
   title: string;
   start_date: string; // YYYY-MM-DD
   end_date: string;   // YYYY-MM-DD
-  description?: string;
+  description?: string | null;
+  source?: "custom" | "neis"; // neis = 나이스 공식 일정 (읽기 전용)
 }
 
 export default function CalendarPage() {
@@ -15,8 +16,8 @@ export default function CalendarPage() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 🔐 관리자 권한 상태 (실제 서비스에서는 로그인 세션/유저 정보에서 가져옵니다)
-  const [isAdmin, setIsAdmin] = useState(true); // 테스트용 (기본값 true)
+  // 🔐 관리자 권한 상태 (/api/me 의 역할로 판단)
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // 📝 모달 및 수정 관련 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,26 +31,28 @@ export default function CalendarPage() {
   const [formDescription, setFormDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 1. 학사 일정 불러오기 (GET /api/calendar)
-  const fetchEvents = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/calendar");
-      if (response.ok) {
-        const data = await response.json();
-        setEvents(data.events || []);
-      } else {
-        console.error("일정을 불러오지 못했습니다.");
-      }
-    } catch (error) {
-      console.error("API 통신 에러:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // 1. 학사 일정 불러오기 (GET /api/calendar) — state 갱신은 비동기 콜백 안에서
+  const fetchEvents = () =>
+    fetch("/api/calendar")
+      .then(async (response) => {
+        if (response.ok) {
+          const data = await response.json();
+          setEvents(data.events || []);
+        } else {
+          console.error("일정을 불러오지 못했습니다.");
+        }
+      })
+      .catch((error) => console.error("API 통신 에러:", error))
+      .finally(() => setIsLoading(false));
 
   useEffect(() => {
     fetchEvents();
+
+    // 로그인 사용자의 역할 확인 (admin/superadmin이면 일정 등록·수정 가능)
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => setIsAdmin(["admin", "superadmin"].includes(d.role)))
+      .catch(() => {});
   }, []);
 
   // 달력 연/월 계산
@@ -72,7 +75,10 @@ export default function CalendarPage() {
     return `${year}-${formattedMonth}-${formattedDay}`;
   };
 
-  // 2. 날짜 클릭 처리 (관리자 권한 체크)
+  // 2-a. 날짜(빈 공간) 클릭 → 그 날짜에 새 일정 등록
+  // 이전에는 날짜를 클릭하면 그 날짜의 "첫 번째" 일정을 찾아 수정 모드로 열었기 때문에,
+  // 같은 날짜에 일정이 여러 개면 항상 하나만 수정되는 문제가 있었다.
+  // 이제 수정은 일정 막대를 직접 클릭해 그 일정의 id로만 연다(2-b).
   const handleDateClick = (day: number) => {
     const dateStr = formatDateString(day);
 
@@ -83,28 +89,31 @@ export default function CalendarPage() {
     }
 
     setSelectedDate(dateStr);
+    setEditingEventId(null);
+    setFormTitle("");
+    setFormStartDate(dateStr);
+    setFormEndDate(dateStr);
+    setFormDescription("");
+    setIsModalOpen(true);
+  };
 
-    // 해당 날짜에 이미 등록된 일정이 있는지 확인
-    const existingEvent = events.find(
-      (evt) => evt.start_date <= dateStr && evt.end_date >= dateStr
-    );
-
-    if (existingEvent) {
-      // 기존 일정 수정 모드
-      setEditingEventId(existingEvent.id);
-      setFormTitle(existingEvent.title);
-      setFormStartDate(existingEvent.start_date);
-      setFormEndDate(existingEvent.end_date);
-      setFormDescription(existingEvent.description || "");
-    } else {
-      // 새 일정 등록 모드
-      setEditingEventId(null);
-      setFormTitle("");
-      setFormStartDate(dateStr);
-      setFormEndDate(dateStr);
-      setFormDescription("");
+  // 2-b. 일정 막대 클릭 → 클릭한 그 일정(id)만 수정
+  const handleEventClick = (evt: CalendarEvent, dateStr: string) => {
+    if (!isAdmin) {
+      alert("일정 등록 및 수정은 관리자만 가능합니다.");
+      return;
+    }
+    if (evt.source === "neis" || evt.id.startsWith("neis-")) {
+      alert(`[나이스 공식 일정] ${evt.title}\n\n공식 학사일정은 수정·삭제할 수 없습니다.`);
+      return;
     }
 
+    setSelectedDate(dateStr);
+    setEditingEventId(evt.id);
+    setFormTitle(evt.title);
+    setFormStartDate(evt.start_date);
+    setFormEndDate(evt.end_date);
+    setFormDescription(evt.description || "");
     setIsModalOpen(true);
   };
 
@@ -185,30 +194,15 @@ export default function CalendarPage() {
 
   return (
     <div className="max-w-[1000px] mx-auto px-4 py-8">
-      {/* 상단 헤더 & 권한 테스트 토글 */}
+      {/* 상단 헤더 */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-[28px] font-bold text-secondary">학사 일정 캘린더</h1>
           <p className="text-gray-600 text-[14px]">
             {isAdmin
-              ? "💡 날짜를 클릭하면 관리자 권한으로 일정을 등록·수정할 수 있습니다."
+              ? "💡 날짜의 빈 곳을 클릭하면 새 일정을 등록하고, 일정을 클릭하면 그 일정을 수정할 수 있습니다."
               : "학교의 주요 학사 일정을 확인하세요."}
           </p>
-        </div>
-
-        {/* 테스트용 권한 토글 스위치 (개발 시 확인용) */}
-        <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-xl text-[13px]">
-          <span className="font-semibold text-gray-700">권한 테스트:</span>
-          <button
-            onClick={() => setIsAdmin(!isAdmin)}
-            className={`px-3 py-1 rounded-lg font-bold transition-all ${
-              isAdmin
-                ? "bg-primary text-white"
-                : "bg-gray-300 text-gray-700"
-            }`}
-          >
-            {isAdmin ? "관리자 (수정 가능)" : "학생 (읽기 전용)"}
-          </button>
         </div>
       </div>
 
@@ -297,13 +291,20 @@ export default function CalendarPage() {
                 {/* 일정 바 표시 */}
                 <div className="space-y-1 overflow-y-auto">
                   {dayEvents.map((evt) => (
-                    <div
+                    <button
+                      type="button"
                       key={evt.id}
-                      className="text-[11px] bg-primary/10 text-primary font-semibold px-2 py-1 rounded truncate"
+                      onClick={(e) => {
+                        e.stopPropagation(); // 날짜 클릭(새 일정 등록)으로 전파되지 않게
+                        handleEventClick(evt, dateStr);
+                      }}
+                      className={`block w-full text-left text-[11px] bg-primary/10 text-primary font-semibold px-2 py-1 rounded truncate ${
+                        isAdmin ? "hover:bg-primary hover:text-white transition-colors" : "cursor-default"
+                      }`}
                       title={evt.title}
                     >
                       {evt.title}
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>

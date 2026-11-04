@@ -1,11 +1,18 @@
-@import url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/Paperlogy-4Regular.woff2');
+/*
+ * 사이트 전역 폰트: Paperlogy (로그인 페이지 기준으로 통일)
+ * - 폰트 로드는 이 파일 한 곳에서만 합니다. 페이지별 CSS에서 font-family를 다시 선언하지 마세요.
+ * - 이전에는 .woff2 파일 자체를 @import 하고 있어서 @font-face가 정의되지 않았고,
+ *   로그인 페이지(login.css)에 들어갔을 때만 Paperlogy가 로드되어 폰트가 바뀌어 보였습니다.
+ */
+@import url("https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/subsets/Paperlogy-dynamic-subset.css");
 @import "tailwindcss";
 
 @theme inline {
   --color-primary: #f39733;
   --color-secondary: #2c3e50;
   --color-neutralBg: #faf8f5;
-  --font-paperlogy: "Paperlogy", sans-serif;
+  --font-paperlogy: "Paperlogy", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+  --font-sans: var(--font-paperlogy);
 }
 
 body {

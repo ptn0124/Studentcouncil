@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Notice } from "@/types";
+import { AlertIcon, CalendarIcon, EyeIcon, PinIcon, UserIcon } from "@/components/icons";
 
 export interface NoticeDetailProps {
   params: Promise<{ id: string }>;
@@ -33,7 +34,12 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
           throw new Error("Notice not found");
         }
         const data = await res.json();
-        setNotice(data.notice);
+        // 조회수 증가 요청과 응답 순서가 엇갈려도 더 큰(최신) 조회수를 유지
+        setNotice((prev) =>
+          prev && prev.id === data.notice.id
+            ? { ...data.notice, view_count: Math.max(prev.view_count, data.notice.view_count) }
+            : data.notice,
+        );
       } catch (error) {
         console.error("Failed to fetch notice detail:", error);
       } finally {
@@ -41,6 +47,32 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
       }
     };
 
+    // 조회수 증가: 같은 탭(세션)에서는 공지당 1회만 요청한다.
+    // effect가 두 번 실행돼도(개발 모드 StrictMode) 키를 먼저 기록하므로 중복 요청되지 않는다.
+    // 서버도 쿠키로 브라우저 세션당 1회만 증가시킨다.
+    const countView = async () => {
+      const key = `notice_viewed_${id}`;
+      try {
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, "1");
+      } catch {
+        // sessionStorage를 쓸 수 없는 환경이면 서버 쿠키 검사에만 의존
+      }
+      try {
+        const res = await fetch(`/api/notices/${id}/view`, { method: "POST" });
+        if (!res.ok) return;
+        const { view_count } = await res.json();
+        if (typeof view_count === "number") {
+          setNotice((prev) =>
+            prev ? { ...prev, view_count: Math.max(prev.view_count, view_count) } : prev,
+          );
+        }
+      } catch (error) {
+        console.error("Failed to count view:", error);
+      }
+    };
+
+    countView();
     fetchNoticeDetail();
   }, [id]);
 
@@ -123,7 +155,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
   if (!notice) {
     return (
       <div className="text-center py-24 bg-white/50 backdrop-blur-sm rounded-2xl border border-[#2c3e50]/10 max-w-[600px] mx-auto space-y-4">
-        <p className="text-[32px]">⚠️</p>
+        <AlertIcon className="w-10 h-10 mx-auto text-[#f39733]" />
         <h2 className="text-[20px] font-bold text-[#2c3e50]">존재하지 않는 공지사항</h2>
         <p className="text-[14px] text-[#2c3e50]/50">삭제되었거나 잘못된 경로입니다.</p>
         <div className="pt-4">
@@ -139,7 +171,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
   }
 
   return (
-    <article className="max-w-[900px] mx-auto space-y-8 py-6">
+    <article className="max-w-[900px] w-full min-w-0 mx-auto space-y-8 py-6">
       {/* 상단 네비게이션 경로 */}
       <div className="flex items-center space-x-2 text-[14px] text-[#2c3e50]/50">
         <Link href="/" className="hover:text-[#f39733] transition-colors duration-200">
@@ -189,7 +221,7 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
                 }
                 className="w-4 h-4 accent-[#f39733]"
               />
-              <span>📌 중요 공지로 고정</span>
+              <span className="inline-flex items-center gap-1"><PinIcon className="w-3.5 h-3.5 text-[#f39733]" />중요 공지로 고정</span>
             </label>
 
             <div className="flex gap-2">
@@ -218,8 +250,8 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 {notice.is_pinned && (
-                  <span className="bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-2.5 py-1 rounded-md shadow-sm">
-                    📌 중요 공지
+                  <span className="inline-flex items-center gap-1 bg-[#f39733] text-[#faf8f5] text-[12px] font-bold px-2.5 py-1 rounded-md shadow-sm">
+                    <PinIcon className="w-3.5 h-3.5" /> 중요 공지
                   </span>
                 )}
               </div>
@@ -244,23 +276,30 @@ export default function NoticeDetailPage({ params }: NoticeDetailProps) {
             </div>
 
             {/* H1: 30px */}
-            <h1 className="text-[30px] font-extrabold text-[#2c3e50] leading-snug tracking-tight">
+            <h1 className="text-[24px] sm:text-[30px] font-extrabold text-[#2c3e50] leading-snug tracking-tight break-words [overflow-wrap:anywhere]">
               {notice.title}
             </h1>
 
             {/* 메타정보 (캡션) caption: 14px */}
-            <div className="flex flex-wrap items-center gap-4 text-[14px] text-[#2c3e50]/50">
-              <span className="font-medium text-[#2c3e50]/70">👤 작성자: 학생회</span>
-              <span>•</span>
-              <span>📅 등록: {formatDate(notice.created_at)}</span>
-              <span>•</span>
-              <span>👀 조회수: {notice.view_count}</span>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px] text-[#2c3e50]/50">
+              <span className="inline-flex items-center gap-1.5 font-medium text-[#2c3e50]/70">
+                <UserIcon /> 작성자: 학생회
+              </span>
+              <span aria-hidden="true" className="hidden sm:inline">•</span>
+              <span className="inline-flex items-center gap-1.5">
+                <CalendarIcon /> 등록: {formatDate(notice.created_at)}
+              </span>
+              <span aria-hidden="true" className="hidden sm:inline">•</span>
+              <span className="inline-flex items-center gap-1.5">
+                <EyeIcon /> 조회수: {notice.view_count}
+              </span>
             </div>
           </div>
 
           {/* 본문 영역 body: 16px */}
-          <div className="bg-white/70 backdrop-blur-sm border border-[#2c3e50]/10 rounded-2xl p-6 md:p-10 shadow-sm">
-            <div className="text-[16px] text-[#2c3e50] whitespace-pre-wrap leading-relaxed space-y-4">
+          {/* 개행(\n) 유지 + 긴 단어·URL도 컨테이너 안에서 줄바꿈 */}
+          <div className="min-w-0 bg-white/70 backdrop-blur-sm border border-[#2c3e50]/10 rounded-2xl p-5 sm:p-6 md:p-10 shadow-sm">
+            <div className="text-[16px] text-[#2c3e50] whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">
               {notice.content}
             </div>
           </div>
